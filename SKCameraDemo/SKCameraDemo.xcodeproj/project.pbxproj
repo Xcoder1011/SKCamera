@@ -13,6 +13,8 @@
 		BC15C1F01ECEC68A00CEF6F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1EE1ECEC68A00CEF6F8 /* Main.storyboard */; };
 		BC15C1F21ECEC68A00CEF6F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */; };
 		BC15C1F51ECEC68A00CEF6F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */; };
+		BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35041ED2C0B9000AD97F /* RecordViewController.m */; };
+		BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350A1ED2E05D000AD97F /* CircleProgressView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,10 @@
 		BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BC15C1F41ECEC68A00CEF6F8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BC15C1F61ECEC68A00CEF6F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BCED35031ED2C0B9000AD97F /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
+		BCED35041ED2C0B9000AD97F /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
+		BCED35091ED2E05D000AD97F /* CircleProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleProgressView.h; sourceTree = "<group>"; };
+		BCED350A1ED2E05D000AD97F /* CircleProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleProgressView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,13 +66,10 @@
 			children = (
 				BC15C1E81ECEC68A00CEF6F8 /* AppDelegate.h */,
 				BC15C1E91ECEC68A00CEF6F8 /* AppDelegate.m */,
-				BC15C1EB1ECEC68A00CEF6F8 /* ViewController.h */,
-				BC15C1EC1ECEC68A00CEF6F8 /* ViewController.m */,
-				BC15C1EE1ECEC68A00CEF6F8 /* Main.storyboard */,
-				BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */,
-				BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */,
-				BC15C1F61ECEC68A00CEF6F8 /* Info.plist */,
+				BCED34FC1ED2AE31000AD97F /* Main */,
+				BC15C1FD1ECECEE200CEF6F8 /* Other */,
 				BC15C1E51ECEC68A00CEF6F8 /* Supporting Files */,
+				BCED34F51ED2AB3D000AD97F /* Vendor */,
 			);
 			path = SKCameraDemo;
 			sourceTree = "<group>";
@@ -76,7 +79,54 @@
 			children = (
 				BC15C1E61ECEC68A00CEF6F8 /* main.m */,
 			);
-			name = "Supporting Files";
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		BC15C1FD1ECECEE200CEF6F8 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */,
+				BC15C1F61ECEC68A00CEF6F8 /* Info.plist */,
+				BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */,
+				BC15C1EE1ECEC68A00CEF6F8 /* Main.storyboard */,
+				BC15C1EB1ECEC68A00CEF6F8 /* ViewController.h */,
+				BC15C1EC1ECEC68A00CEF6F8 /* ViewController.m */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		BCED34F51ED2AB3D000AD97F /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Vendor;
+			sourceTree = "<group>";
+		};
+		BCED34FC1ED2AE31000AD97F /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				BCED34FD1ED2AE3A000AD97F /* Controllers */,
+				BCED34FF1ED2B569000AD97F /* Views */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		BCED34FD1ED2AE3A000AD97F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				BCED35031ED2C0B9000AD97F /* RecordViewController.h */,
+				BCED35041ED2C0B9000AD97F /* RecordViewController.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		BCED34FF1ED2B569000AD97F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BCED35091ED2E05D000AD97F /* CircleProgressView.h */,
+				BCED350A1ED2E05D000AD97F /* CircleProgressView.m */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -110,6 +160,7 @@
 				TargetAttributes = {
 					BC15C1E11ECEC68A00CEF6F8 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = LH66V26Z7L;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -153,6 +204,8 @@
 				BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */,
 				BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */,
 				BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */,
+				BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */,
+				BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,6 +218,7 @@
 				BC15C1EF1ECEC68A00CEF6F8 /* Base */,
 			);
 			name = Main.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 		BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */ = {
@@ -173,6 +227,7 @@
 				BC15C1F41ECEC68A00CEF6F8 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = .;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -270,7 +325,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SKCameraDemo/Info.plist;
+				DEVELOPMENT_TEAM = LH66V26Z7L;
+				INFOPLIST_FILE = SKCameraDemo/Other/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lemon.SKCameraDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -281,7 +338,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = SKCameraDemo/Info.plist;
+				DEVELOPMENT_TEAM = LH66V26Z7L;
+				INFOPLIST_FILE = SKCameraDemo/Other/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lemon.SKCameraDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -307,6 +366,7 @@
 				BC15C1FB1ECEC68A00CEF6F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
