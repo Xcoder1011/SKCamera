@@ -10,4 +10,8 @@
 
 @interface CircleProgressView : UIView
 
+@property (nonatomic , copy) void (^startRecordingVideo)( UIButton * btn);
+
+@property (nonatomic , copy) void (^stopRecordingVideo)( UIButton * btn);
+
 @end

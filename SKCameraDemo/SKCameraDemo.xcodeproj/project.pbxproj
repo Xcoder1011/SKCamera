@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC03F10F1ED58D3D00F49585 /* VideoPlayViewController.m */; };
 		BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1E61ECEC68A00CEF6F8 /* main.m */; };
 		BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1E91ECEC68A00CEF6F8 /* AppDelegate.m */; };
 		BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1EC1ECEC68A00CEF6F8 /* ViewController.m */; };
@@ -15,9 +16,23 @@
 		BC15C1F51ECEC68A00CEF6F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */; };
 		BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35041ED2C0B9000AD97F /* RecordViewController.m */; };
 		BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350A1ED2E05D000AD97F /* CircleProgressView.m */; };
+		BCED35131ED2E911000AD97F /* SKCamera+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */; };
+		BCED35141ED2E911000AD97F /* SKCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35101ED2E911000AD97F /* SKCamera.m */; };
+		BCED35151ED2E911000AD97F /* UIImage+FixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */; };
+		BCED35311ED2EB92000AD97F /* UIImage+Crop.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */; };
+		BCED35321ED2EB92000AD97F /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */; };
+		BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED353C1ED2EE33000AD97F /* ViewUtils.m */; };
+		BCED35411ED2F77B000AD97F /* TopControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35401ED2F77B000AD97F /* TopControlView.m */; };
+		BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35461ED2F7DA000AD97F /* BottomControlView.m */; };
+		DA8318F53FA2BE638A2C4490 /* libPods-SKCameraDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3590D02F506CE9DC1F8BBE3 /* libPods-SKCameraDemo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D3DA436879F426EB90DDE82 /* Pods-SKCameraDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SKCameraDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-SKCameraDemo/Pods-SKCameraDemo.release.xcconfig"; sourceTree = "<group>"; };
+		333075403BEF118E76C5A876 /* Pods-SKCameraDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SKCameraDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SKCameraDemo/Pods-SKCameraDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		B3590D02F506CE9DC1F8BBE3 /* libPods-SKCameraDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SKCameraDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC03F10E1ED58D3D00F49585 /* VideoPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayViewController.h; sourceTree = "<group>"; };
+		BC03F10F1ED58D3D00F49585 /* VideoPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayViewController.m; sourceTree = "<group>"; };
 		BC15C1E21ECEC68A00CEF6F8 /* SKCameraDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKCameraDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC15C1E61ECEC68A00CEF6F8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BC15C1E81ECEC68A00CEF6F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -32,6 +47,24 @@
 		BCED35041ED2C0B9000AD97F /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
 		BCED35091ED2E05D000AD97F /* CircleProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleProgressView.h; sourceTree = "<group>"; };
 		BCED350A1ED2E05D000AD97F /* CircleProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleProgressView.m; sourceTree = "<group>"; };
+		BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SKCamera+Helper.h"; sourceTree = "<group>"; };
+		BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SKCamera+Helper.m"; sourceTree = "<group>"; };
+		BCED350F1ED2E911000AD97F /* SKCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCamera.h; sourceTree = "<group>"; };
+		BCED35101ED2E911000AD97F /* SKCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCamera.m; sourceTree = "<group>"; };
+		BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+FixOrientation.h"; sourceTree = "<group>"; };
+		BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+FixOrientation.m"; sourceTree = "<group>"; };
+		BCED352B1ED2EB92000AD97F /* UIImage+Crop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Crop.h"; sourceTree = "<group>"; };
+		BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Crop.m"; sourceTree = "<group>"; };
+		BCED352D1ED2EB92000AD97F /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
+		BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
+		BCED35341ED2EBE6000AD97F /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		BCED353B1ED2EE33000AD97F /* ViewUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewUtils.h; sourceTree = "<group>"; };
+		BCED353C1ED2EE33000AD97F /* ViewUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewUtils.m; sourceTree = "<group>"; };
+		BCED353E1ED2F22D000AD97F /* BaseMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseMacro.h; sourceTree = "<group>"; };
+		BCED353F1ED2F77B000AD97F /* TopControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopControlView.h; sourceTree = "<group>"; };
+		BCED35401ED2F77B000AD97F /* TopControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopControlView.m; sourceTree = "<group>"; };
+		BCED35451ED2F7DA000AD97F /* BottomControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BottomControlView.h; sourceTree = "<group>"; };
+		BCED35461ED2F7DA000AD97F /* BottomControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomControlView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,17 +72,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA8318F53FA2BE638A2C4490 /* libPods-SKCameraDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6CA97EEB0C5E711BFF344C53 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B3590D02F506CE9DC1F8BBE3 /* libPods-SKCameraDemo.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B834E692D7B679363E4B8E7B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				333075403BEF118E76C5A876 /* Pods-SKCameraDemo.debug.xcconfig */,
+				1D3DA436879F426EB90DDE82 /* Pods-SKCameraDemo.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		BC15C1D91ECEC68A00CEF6F8 = {
 			isa = PBXGroup;
 			children = (
 				BC15C1E41ECEC68A00CEF6F8 /* SKCameraDemo */,
 				BC15C1E31ECEC68A00CEF6F8 /* Products */,
+				B834E692D7B679363E4B8E7B /* Pods */,
+				6CA97EEB0C5E711BFF344C53 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,10 +119,12 @@
 			children = (
 				BC15C1E81ECEC68A00CEF6F8 /* AppDelegate.h */,
 				BC15C1E91ECEC68A00CEF6F8 /* AppDelegate.m */,
+				BCED350C1ED2E911000AD97F /* SKCamera */,
 				BCED34FC1ED2AE31000AD97F /* Main */,
+				BCED352A1ED2EB92000AD97F /* Utils */,
 				BC15C1FD1ECECEE200CEF6F8 /* Other */,
-				BC15C1E51ECEC68A00CEF6F8 /* Supporting Files */,
 				BCED34F51ED2AB3D000AD97F /* Vendor */,
+				BC15C1E51ECEC68A00CEF6F8 /* Supporting Files */,
 			);
 			path = SKCameraDemo;
 			sourceTree = "<group>";
@@ -91,6 +146,8 @@
 				BC15C1EE1ECEC68A00CEF6F8 /* Main.storyboard */,
 				BC15C1EB1ECEC68A00CEF6F8 /* ViewController.h */,
 				BC15C1EC1ECEC68A00CEF6F8 /* ViewController.m */,
+				BCED35341ED2EBE6000AD97F /* PrefixHeader.pch */,
+				BCED353E1ED2F22D000AD97F /* BaseMacro.h */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -116,6 +173,8 @@
 			children = (
 				BCED35031ED2C0B9000AD97F /* RecordViewController.h */,
 				BCED35041ED2C0B9000AD97F /* RecordViewController.m */,
+				BC03F10E1ED58D3D00F49585 /* VideoPlayViewController.h */,
+				BC03F10F1ED58D3D00F49585 /* VideoPlayViewController.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -125,8 +184,38 @@
 			children = (
 				BCED35091ED2E05D000AD97F /* CircleProgressView.h */,
 				BCED350A1ED2E05D000AD97F /* CircleProgressView.m */,
+				BCED353F1ED2F77B000AD97F /* TopControlView.h */,
+				BCED35401ED2F77B000AD97F /* TopControlView.m */,
+				BCED35451ED2F7DA000AD97F /* BottomControlView.h */,
+				BCED35461ED2F7DA000AD97F /* BottomControlView.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		BCED350C1ED2E911000AD97F /* SKCamera */ = {
+			isa = PBXGroup;
+			children = (
+				BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */,
+				BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */,
+				BCED350F1ED2E911000AD97F /* SKCamera.h */,
+				BCED35101ED2E911000AD97F /* SKCamera.m */,
+				BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */,
+				BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */,
+			);
+			path = SKCamera;
+			sourceTree = "<group>";
+		};
+		BCED352A1ED2EB92000AD97F /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				BCED352B1ED2EB92000AD97F /* UIImage+Crop.h */,
+				BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */,
+				BCED352D1ED2EB92000AD97F /* UIImage+Resize.h */,
+				BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */,
+				BCED353B1ED2EE33000AD97F /* ViewUtils.h */,
+				BCED353C1ED2EE33000AD97F /* ViewUtils.m */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,9 +225,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BC15C1F91ECEC68A00CEF6F8 /* Build configuration list for PBXNativeTarget "SKCameraDemo" */;
 			buildPhases = (
+				5D095AF0AB0B398E11053B60 /* [CP] Check Pods Manifest.lock */,
 				BC15C1DE1ECEC68A00CEF6F8 /* Sources */,
 				BC15C1DF1ECEC68A00CEF6F8 /* Frameworks */,
 				BC15C1E01ECEC68A00CEF6F8 /* Resources */,
+				4A392A1E37CF594BD5C23D26 /* [CP] Embed Pods Frameworks */,
+				ECB655D47EEAEFFE00A55F3B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -196,16 +288,73 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		4A392A1E37CF594BD5C23D26 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SKCameraDemo/Pods-SKCameraDemo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5D095AF0AB0B398E11053B60 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		ECB655D47EEAEFFE00A55F3B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SKCameraDemo/Pods-SKCameraDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BC15C1DE1ECEC68A00CEF6F8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCED35311ED2EB92000AD97F /* UIImage+Crop.m in Sources */,
 				BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */,
 				BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */,
+				BCED35151ED2E911000AD97F /* UIImage+FixOrientation.m in Sources */,
+				BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */,
+				BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */,
+				BCED35131ED2E911000AD97F /* SKCamera+Helper.m in Sources */,
+				BCED35411ED2F77B000AD97F /* TopControlView.m in Sources */,
 				BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */,
 				BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */,
+				BCED35141ED2E911000AD97F /* SKCamera.m in Sources */,
+				BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */,
 				BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */,
+				BCED35321ED2EB92000AD97F /* UIImage+Resize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,9 +472,12 @@
 		};
 		BC15C1FA1ECEC68A00CEF6F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 333075403BEF118E76C5A876 /* Pods-SKCameraDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = LH66V26Z7L;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/SKCameraDemo/Other/PrefixHeader.pch";
 				INFOPLIST_FILE = SKCameraDemo/Other/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -336,9 +488,12 @@
 		};
 		BC15C1FB1ECEC68A00CEF6F8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1D3DA436879F426EB90DDE82 /* Pods-SKCameraDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = LH66V26Z7L;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/SKCameraDemo/Other/PrefixHeader.pch";
 				INFOPLIST_FILE = SKCameraDemo/Other/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
