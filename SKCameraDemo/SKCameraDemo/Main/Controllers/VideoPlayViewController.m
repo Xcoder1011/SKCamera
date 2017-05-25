@@ -28,11 +28,11 @@
     return self;
 }
 
-- (void)viewDidLoad { 
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
+
     self.player = [AVPlayer playerWithURL:self.videoUrl];
     self.player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
     
@@ -48,13 +48,15 @@
     [self.view.layer addSublayer:self.playerLayer];
     
     [self.view addSubview:self.cancelButton];
+    [self.player play];
+
    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
     [self.player play];
+
 }
 
 - (void)playerItemDidReachEnd:(NSNotification *)notification {

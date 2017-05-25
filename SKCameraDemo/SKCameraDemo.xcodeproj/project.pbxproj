@@ -195,10 +195,10 @@
 		BCED350C1ED2E911000AD97F /* SKCamera */ = {
 			isa = PBXGroup;
 			children = (
-				BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */,
-				BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */,
 				BCED350F1ED2E911000AD97F /* SKCamera.h */,
 				BCED35101ED2E911000AD97F /* SKCamera.m */,
+				BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */,
+				BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */,
 				BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */,
 				BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */,
 			);

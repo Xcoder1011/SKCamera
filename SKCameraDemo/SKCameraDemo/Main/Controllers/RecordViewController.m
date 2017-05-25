@@ -13,7 +13,6 @@
 #import "VideoPlayViewController.h"
 
 
-
 @interface RecordViewController ()
 @property (strong, nonatomic) SKCamera *camera;
 
@@ -101,16 +100,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     [self.camera startRunnig];
 }
-
 
 
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-  
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -153,7 +149,6 @@
     return _topControlView;
 }
 
-//static inline nss
 
 - (BottomControlView *)bottomControlView {
 
@@ -164,28 +159,34 @@
         _bottomControlView = [[BottomControlView alloc] initWithFrame:CGRectZero];
 
         _bottomControlView.switchButtonPressed = ^(UIButton *button) {
-            NSLog(@"切换摄像头");
+            NSLog(@"rotate camera");
             [weakself.camera togglePosition];
         };
         
         _bottomControlView.slectPhotoButtonPressed = ^(UIButton *button) {
-            NSLog(@"打开相册");
+            NSLog(@"open photos");
         };
         
         _bottomControlView.recordCircleView.startRecordingVideo = ^(UIButton *button) {
-            NSLog(@"开始录制");
-            [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
-                NSLog(@"outputFileUrl = %@",outputFileUrl);
-                // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
-                
-                VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
-                [weakself.navigationController pushViewController:vc animated:YES];
-            }];
+            
+            if (![weakself.camera isRecording]) {
+                NSLog(@"start record");
+                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+                    NSLog(@"outputFileUrl = %@",outputFileUrl);
+                    // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
+                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
+                    [weakself.navigationController pushViewController:vc animated:YES];
+                   
+                }];
+            }
         };
         
         _bottomControlView.recordCircleView.stopRecordingVideo = ^(UIButton *button) {
-            NSLog(@"停止录制");
-            [weakself.camera stopRecording];
+            
+            if ([weakself.camera isRecording]) {
+                NSLog(@"stop record");
+                [weakself.camera stopRecording];
+            }
         };
     }
     return _bottomControlView;
