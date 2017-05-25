@@ -176,7 +176,6 @@
                     // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
                     VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
                     [weakself.navigationController pushViewController:vc animated:YES];
-                   
                 }];
             }
         };

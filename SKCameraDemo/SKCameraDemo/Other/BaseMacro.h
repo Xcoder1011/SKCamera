@@ -85,5 +85,34 @@ static inline void dispatch_async_on_globalqueue_then_on_mainqueue(void(^globalb
 }
 
 
+static inline UIButton * createImgButton(CGRect frame, NSString *imageName ,id target, SEL sel) {
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (imageName) {
+        [btn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    }
+    if (target && sel) {
+        [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    }
+    return btn;
+}
+
+static inline UIButton * createTitleButton(CGRect frame, NSString *buttonTitle, UIColor *titleColor ,UIFont *titleFont,id target, SEL sel) {
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    if (buttonTitle) {
+        [btn setTitle:buttonTitle forState:UIControlStateNormal];
+    }
+    if (titleColor) {
+        [btn setTitleColor:titleColor forState:0];
+    }
+    if (titleFont) {
+        btn.titleLabel.font = titleFont;
+    }
+    if (target && sel) {
+        [btn addTarget:target action:sel forControlEvents:UIControlEventTouchUpInside];
+    }
+    return btn;
+}
+
+
 
 #endif /* BaseMacro_h */

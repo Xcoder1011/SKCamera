@@ -22,7 +22,9 @@
 
 @property (nonatomic, strong) CALayer *middleLayer;
 @property (nonatomic, strong) CALayer *bgLayer;
-@property (strong, nonatomic) CAShapeLayer * progressLayer;
+@property (strong, nonatomic) CAShapeLayer * progressLayer;   // circle progress
+@property (strong, nonatomic) CAShapeLayer * checkmarkLayer;  // 对号✅
+
 @property (nonatomic, strong) UIButton *tapButton;
 
 @property (strong, nonatomic) CAAnimationGroup *animationGroup;
@@ -91,11 +93,10 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     if (btn.selected) {
         
         [self.middleLayer addAnimation:ScaleAnimation(1.0, 12.0/15, ANIMATION_DURATION) forKey:@"middlelayer"];
-        
         [self.bgLayer addAnimation:ScaleAnimation(1.0, 36.0/24, ANIMATION_DURATION) forKey:@"bgLayer"];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            
+
             if (self.startRecordingVideo) {
                 self.startRecordingVideo(btn);
                 [self startRunningCircleProgress];
@@ -111,14 +112,18 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     
 }
 
+
 - (void)startRunningCircleProgress {
     [self.progressLayer addAnimation:self.animationGroup forKey:@"group"];
 }
 
 
 - (void)stopRunningCircleProgress{
+    
     if (self.animationGroup) {
         [self.progressLayer removeAllAnimations];
+        [self.middleLayer removeAllAnimations];
+        [self.bgLayer removeAllAnimations];
     }
 }
 
@@ -128,7 +133,6 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     if (self.stopRecordingVideo) {
         self.stopRecordingVideo(self.tapButton);
     }
-    
 }
 
 
