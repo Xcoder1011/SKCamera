@@ -198,8 +198,11 @@ static inline NSURL * OutputUrl() {
     if (![[NSFileManager defaultManager] fileExistsAtPath:tempVideoPath]) {
         [[NSFileManager defaultManager] createDirectoryAtPath:tempVideoPath withIntermediateDirectories:YES attributes:nil error:nil];
     }
-    NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
-    NSString *fileName = [NSString stringWithFormat:@"Documents/SKCameraVideo/%.0ftest.mp4",time];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"YYYY-MM-DD--HH:mm:ss"];
+    NSString *dateTime = [formatter stringFromDate:[NSDate date]];
+    
+    NSString *fileName = [NSString stringWithFormat:@"Documents/SKCameraVideo/%@test.mp4",dateTime];
     NSString *pathFirstToMovie = [NSHomeDirectory() stringByAppendingPathComponent:fileName];
 
     return [NSURL fileURLWithPath:pathFirstToMovie];

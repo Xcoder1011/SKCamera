@@ -33,14 +33,79 @@
 
     [self configVideoPlayer];
     [self setTopControlView];
+    [self setBottomControlView];
+}
+
+-(void)setBottomControlView {
+    
+    UIView *bottomControlView = [UIView new];
+    UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
+    [bottomControlView addSubview:effectView];
+    
+    // 1. doneBtn
+    UIButton *doneBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"done_" clickAction:^(UIButton *btn) {
+        NSLog(@"OK");
+    }];
+    
+    // 2. backBtn
+    UIButton *backBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"back_" clickAction:^(UIButton *btn) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }];
+    
+    // 3. saveBtn
+    UIButton *saveBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"save_" clickAction:^(UIButton *btn) {
+        NSLog(@"save to album");
+    }];
+    
+    [bottomControlView addSubview:doneBtn];
+    [bottomControlView addSubview:backBtn];
+    [bottomControlView addSubview:saveBtn];
+
+    [self.view addSubview:bottomControlView];
+    
+    [bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(self.view.mas_bottom).offset(0);
+        make.left.equalTo(self.view.mas_left).offset(0);
+        make.right.equalTo(self.view.mas_right).offset(0);
+        make.height.mas_equalTo( self.view.height - self.view.width - kscaleDeviceWidth(240));
+    }];
+    
+    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(bottomControlView).insets(UIEdgeInsetsZero);
+    }];
+    
+    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(bottomControlView).insets(UIEdgeInsetsZero);
+    }];
+    
+    [doneBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(kscaleDeviceWidth(360));
+        make.bottom.equalTo(self.view.mas_bottom).offset(-20);
+        make.centerX.equalTo(self.view.mas_centerX);
+    }];
+    
+    [backBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(40);
+        make.left.equalTo(self.view.mas_left).offset(kscaleDeviceWidth(180));
+        make.centerY.equalTo(doneBtn.mas_centerY);
+    }];
+    
+    [saveBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(40);
+        make.right.equalTo(self.view.mas_right).offset( - kscaleDeviceWidth(180));
+        make.centerY.equalTo(doneBtn.mas_centerY);
+    }];
 }
 
 -(void)setTopControlView {
+    
     UIView *topControlView = [UIView new];
     UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
     [topControlView addSubview:effectView];
     
+    // 1. dismissBtn
     UIButton *dismissBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"off_" clickAction:^(UIButton *btn) {
         NSLog(@"取消录制");
         [self.navigationController popViewControllerAnimated:YES];
@@ -48,7 +113,6 @@
     
     [topControlView addSubview:dismissBtn];
     [self.view addSubview:topControlView];
-    
 
     [topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_top).offset(0);

@@ -54,6 +54,11 @@
 {
     return self.frame.size;
 }
+
+- (CGPoint)origin {
+    return self.frame.origin;
+}
+
 - (void)setLeft:(CGFloat)left
 {
     CGRect frame = self.frame;
@@ -109,6 +114,7 @@
     frame.origin = point;
     self.frame = frame;
 }
+
 
 - (void)setCenterX:(CGFloat)centerX{
     self.center = CGPointMake(centerX, self.center.y);
