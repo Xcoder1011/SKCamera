@@ -44,7 +44,6 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     anima.fillMode = kCAFillModeForwards;
     anima.removedOnCompletion = NO;
     return anima;
-    
 }
 
 @implementation CircleProgressView

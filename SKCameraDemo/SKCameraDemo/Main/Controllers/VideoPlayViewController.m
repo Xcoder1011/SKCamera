@@ -9,6 +9,7 @@
 #import "VideoPlayViewController.h"
 
 @import AVFoundation;
+@import Photos;
 
 @interface VideoPlayViewController ()
 @property (strong, nonatomic) NSURL *videoUrl;
@@ -56,6 +57,19 @@
     // 3. saveBtn
     UIButton *saveBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"save_" clickAction:^(UIButton *btn) {
         NSLog(@"save to album");
+        
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:self.videoUrl];
+        } completionHandler:^(BOOL success, NSError * _Nullable error) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (success) {
+                    [SVProgressHUD showSuccessWithStatus:@"保存成功"];
+                } else {
+                    [SVProgressHUD showErrorWithStatus:@"保存失败"];
+                }
+            });
+        }];
     }];
     
     [bottomControlView addSubview:doneBtn];
