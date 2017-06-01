@@ -3,5 +3,6 @@ target :'SKCameraDemo' do
 
 pod 'Masonry'
 pod 'SVProgressHUD'
+pod 'MLeaksFinder'
 
 end

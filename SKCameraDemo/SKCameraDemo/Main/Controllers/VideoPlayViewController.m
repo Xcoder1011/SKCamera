@@ -44,6 +44,8 @@
     UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
     [bottomControlView addSubview:effectView];
     
+    kWeakObj(self)
+
     // 1. doneBtn
     UIButton *doneBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"done_" clickAction:^(UIButton *btn) {
         NSLog(@"OK");
@@ -51,7 +53,7 @@
     
     // 2. backBtn
     UIButton *backBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"back_" clickAction:^(UIButton *btn) {
-        [self.navigationController popViewControllerAnimated:YES];
+        [weakself.navigationController popViewControllerAnimated:YES];
     }];
     
     // 3. saveBtn
@@ -59,7 +61,9 @@
         NSLog(@"save to album");
         
         [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:self.videoUrl];
+            
+            [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:weakself.videoUrl];
+            
         } completionHandler:^(BOOL success, NSError * _Nullable error) {
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -119,10 +123,12 @@
     UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
     [topControlView addSubview:effectView];
     
+    kWeakObj(self)
+
     // 1. dismissBtn
     UIButton *dismissBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"off_" clickAction:^(UIButton *btn) {
-        NSLog(@"取消录制");
-        [self.navigationController popViewControllerAnimated:YES];
+        
+        [weakself.navigationController popViewControllerAnimated:YES];
     }];
     
     [topControlView addSubview:dismissBtn];
@@ -175,6 +181,10 @@
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+- (void)dealloc {
+    NSLog(@"dealloc");
 }
 
 @end

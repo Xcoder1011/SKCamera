@@ -199,7 +199,7 @@ static inline NSURL * OutputUrl() {
         [[NSFileManager defaultManager] createDirectoryAtPath:tempVideoPath withIntermediateDirectories:YES attributes:nil error:nil];
     }
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"YYYY-MM-DD--HH:mm:ss"];
+    [formatter setDateFormat:@"YYYY-MM-DD-HH:mm:ss"];
     NSString *dateTime = [formatter stringFromDate:[NSDate date]];
     
     NSString *fileName = [NSString stringWithFormat:@"Documents/SKCameraVideo/%@test.mp4",dateTime];
