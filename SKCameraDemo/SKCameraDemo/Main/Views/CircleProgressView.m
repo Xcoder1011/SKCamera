@@ -114,6 +114,7 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
 
 - (void)startRunningCircleProgress {
     [self.progressLayer addAnimation:self.animationGroup forKey:@"group"];
+
 }
 
 

@@ -8,6 +8,8 @@
 
 #import "RecordViewController.h"
 #import "SKCamera.h"
+#import "SKCamera+Helper.h"
+
 #import "BottomControlView.h"
 #import "TopControlView.h"
 #import "VideoPlayViewController.h"
@@ -171,12 +173,25 @@
             
             if (![weakself.camera isRecording]) {
                 NSLog(@"start record");
-                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+                
+                [weakself.camera startRecordingWithOutputUrl:OutputUrl() cropSize:CGSizeMake(320, 320) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+                    //
                     NSLog(@"outputFileUrl = %@",outputFileUrl);
                     // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
+                    
                     VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
                     [weakself.navigationController pushViewController:vc animated:YES];
                 }];
+                
+                
+//                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+//                    
+//                    NSLog(@"outputFileUrl = %@",outputFileUrl);
+//                    // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
+//                    
+//                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
+//                    [weakself.navigationController pushViewController:vc animated:YES];
+//                }];
             }
         };
         
@@ -184,7 +199,10 @@
             
             if ([weakself.camera isRecording]) {
                 NSLog(@"stop record");
-                [weakself.camera stopRecording];
+//                [weakself.camera stopRecording];
+                
+                [weakself.camera stopRectRecording];
+
             }
         };
     }

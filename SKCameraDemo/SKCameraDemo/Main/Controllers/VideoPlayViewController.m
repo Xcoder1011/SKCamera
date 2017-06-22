@@ -7,6 +7,7 @@
 //
 
 #import "VideoPlayViewController.h"
+#import "SKCamera+Helper.h"
 
 @import AVFoundation;
 @import Photos;
@@ -40,9 +41,9 @@
 -(void)setBottomControlView {
     
     UIView *bottomControlView = [UIView new];
-    UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
-    [bottomControlView addSubview:effectView];
+//    UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+//    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
+//    [bottomControlView addSubview:effectView];
     
     kWeakObj(self)
 
@@ -60,6 +61,9 @@
     UIButton *saveBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"save_" clickAction:^(UIButton *btn) {
         NSLog(@"save to album");
         
+        [SVProgressHUD showWithStatus:@"视频处理中..."];
+        [SVProgressHUD setDefaultAnimationType:SVProgressHUDAnimationTypeFlat];
+        
         [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
             
             [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:weakself.videoUrl];
@@ -69,11 +73,15 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success) {
                     [SVProgressHUD showSuccessWithStatus:@"保存成功"];
+                    [SVProgressHUD dismissWithDelay:0.3];
+                    
                 } else {
                     [SVProgressHUD showErrorWithStatus:@"保存失败"];
+                    [SVProgressHUD dismissWithDelay:0.3];
                 }
             });
         }];
+        
     }];
     
     [bottomControlView addSubview:doneBtn];
@@ -89,13 +97,9 @@
         make.height.mas_equalTo( self.view.height - self.view.width - kscaleDeviceWidth(240));
     }];
     
-    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(bottomControlView).insets(UIEdgeInsetsZero);
-    }];
-    
-    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(bottomControlView).insets(UIEdgeInsetsZero);
-    }];
+//    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.equalTo(bottomControlView).insets(UIEdgeInsetsZero);
+//    }];
     
     [doneBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.height.mas_equalTo(kscaleDeviceWidth(360));
@@ -119,9 +123,9 @@
 -(void)setTopControlView {
     
     UIView *topControlView = [UIView new];
-    UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
-    [topControlView addSubview:effectView];
+//    UIBlurEffect *beffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+//    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
+//    [topControlView addSubview:effectView];
     
     kWeakObj(self)
 
@@ -141,9 +145,9 @@
         make.height.mas_equalTo(kscaleDeviceWidth(240));
     }];
     
-    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(topControlView).insets(UIEdgeInsetsZero);
-    }];
+//    [effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.equalTo(topControlView).insets(UIEdgeInsetsZero);
+//    }];
     [dismissBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_top).offset(20);
         make.left.equalTo(self.view.mas_left).offset(20);

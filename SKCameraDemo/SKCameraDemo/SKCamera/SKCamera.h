@@ -64,11 +64,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 @property (nonatomic, weak) id<AVCaptureMetadataOutputObjectsDelegate> faceDetectionDelegate;
 @property (nonatomic, weak) id<AVCaptureAudioDataOutputSampleBufferDelegate> audioDelegate;
 
-@property (nonatomic, readonly) dispatch_queue_t cameraQueue;
-@property (nonatomic, readonly) dispatch_queue_t metadataQueue;
-@property (nonatomic, readonly) dispatch_queue_t audioQueue;
-
-@property (nonatomic, readonly) dispatch_queue_t sessionQueue; //
 
 @property (nonatomic, strong, readonly) AVCaptureConnection* videoConnection;
 @property (nonatomic, strong, readonly) AVCaptureConnection* audioConnection;
@@ -195,6 +190,20 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * 停止录制视频
  */
 - (void)stopRecording;
+
+
+
+/*
+ * 开始录制视频   (可以设置 录制的 区域)
+ *
+ * @param url   视频输出的url
+ */
+- (void)startRecordingWithOutputUrl:(NSURL *)url  cropSize:(CGSize)cropSize didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock;
+
+/**
+ * 停止录制视频 (可以设置 录制的 区域)
+ */
+- (void)stopRectRecording;
 
 
 /**

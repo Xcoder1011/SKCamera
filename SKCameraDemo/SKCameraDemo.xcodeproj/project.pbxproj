@@ -16,6 +16,7 @@
 		BC15C1F51ECEC68A00CEF6F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */; };
 		BC29A95E1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m in Sources */ = {isa = PBXBuildFile; fileRef = BC29A95D1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m */; };
 		BC29A9611ED6E61500802435 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = BC29A9601ED6E61500802435 /* SKButton.m */; };
+		BC3385D91EF3A5BC0052A9D3 /* SKCameraWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */; };
 		BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35041ED2C0B9000AD97F /* RecordViewController.m */; };
 		BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350A1ED2E05D000AD97F /* CircleProgressView.m */; };
 		BCED35131ED2E911000AD97F /* SKCamera+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */; };
@@ -49,6 +50,8 @@
 		BC29A95D1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+PreventMultipleClicks.m"; sourceTree = "<group>"; };
 		BC29A95F1ED6E61500802435 /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
 		BC29A9601ED6E61500802435 /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
+		BC3385D71EF3A5BC0052A9D3 /* SKCameraWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCameraWriter.h; sourceTree = "<group>"; };
+		BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCameraWriter.m; sourceTree = "<group>"; };
 		BCED35031ED2C0B9000AD97F /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
 		BCED35041ED2C0B9000AD97F /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
 		BCED35091ED2E05D000AD97F /* CircleProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleProgressView.h; sourceTree = "<group>"; };
@@ -203,6 +206,8 @@
 			children = (
 				BCED350F1ED2E911000AD97F /* SKCamera.h */,
 				BCED35101ED2E911000AD97F /* SKCamera.m */,
+				BC3385D71EF3A5BC0052A9D3 /* SKCameraWriter.h */,
+				BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */,
 				BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */,
 				BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */,
 				BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */,
@@ -354,6 +359,7 @@
 				BCED35311ED2EB92000AD97F /* UIImage+Crop.m in Sources */,
 				BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */,
 				BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */,
+				BC3385D91EF3A5BC0052A9D3 /* SKCameraWriter.m in Sources */,
 				BCED35151ED2E911000AD97F /* UIImage+FixOrientation.m in Sources */,
 				BC29A95E1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m in Sources */,
 				BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */,
