@@ -21,6 +21,10 @@
 @property (strong, nonatomic) TopControlView *topControlView;
 @property (strong, nonatomic) BottomControlView *bottomControlView;
 
+@property (strong, nonatomic) UIView *preView;
+
+@property (strong, nonatomic) UIImageView *imageView;
+
 @end
 
 @implementation RecordViewController
@@ -32,17 +36,25 @@
     
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     
-    [self configCamera];
-    
     [self addSubViews];
     
+    [self configCamera];
+
 }
 
 -(void)addSubViews {
- 
+    
+    _preView = [UIView new];
+    _imageView =[UIImageView new];
+    
+    [self.view addSubview:_preView];
+
     [self.view addSubview:self.topControlView];
     [self.view addSubview:self.bottomControlView];
-
+    
+    [self.view addSubview:_imageView];
+    [self.view bringSubviewToFront:self.imageView];
+    
     [self.topControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_top).offset(0);
         make.left.equalTo(self.view.mas_left).offset(0);
@@ -57,14 +69,35 @@
         make.right.equalTo(self.view.mas_right).offset(0);
         make.height.mas_equalTo( self.view.height - self.view.width - kscaleDeviceWidth(240));
     }];
+    
+//    [self.preView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.bottom.equalTo(self.bottomControlView.mas_top).offset( - 10);
+//        make.left.equalTo(self.view.mas_left).offset(0);
+////        make.right.equalTo(self.view.mas_right).offset(0);
+//        make.width.mas_equalTo(320);
+//        make.height.mas_equalTo(480);
+//    }];
+    
+    [self.preView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view).insets(UIEdgeInsetsZero);
+    }];
+    
+    
+    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(self.view.mas_bottom).offset(0);
+        make.left.equalTo(self.view.mas_left).offset(0);
+        
+        make.width.mas_equalTo(180);
+        make.height.mas_equalTo(180);
+    }];
 }
 
 
 
 -(void)configCamera {
 
-    self.camera = [[SKCamera alloc] initWithVideoQuality:AVCaptureSessionPreset1280x720 position:SKCameraPosition_Back captureDelegate:self];
-    self.camera.previewView = self.view;
+    self.camera = [[SKCamera alloc] initWithVideoQuality:AVCaptureSessionPreset1280x720 position:SKCameraPosition_Back captureDelegate:nil];
+    self.camera.previewView = self.preView;
     self.camera.fixOrientationAfterCapture = NO;
     self.camera.needRecord = YES;
     [self.camera prepare];
@@ -96,13 +129,34 @@
             }
         }
     }];
+    
+    
+    [self.camera setHandleRecording:^(UIImage *image) {
+        //
+        weakself.imageView.image = image;
+    }];
 }
 
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.camera startRunnig];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+
+    [super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [self.camera sk_shutRecording];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+  
+    [self.camera sk_enableRecording];
 }
 
 
@@ -174,36 +228,36 @@
             if (![weakself.camera isRecording]) {
                 NSLog(@"start record");
                 
-                [weakself.camera startRecordingWithOutputUrl:OutputUrl() cropSize:CGSizeMake(320, 320) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
-                    //
-                    NSLog(@"outputFileUrl = %@",outputFileUrl);
-                    // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
+                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl() cropFrame:CGRectMake(0, kscaleDeviceWidth(240), 320, 320) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
                     
                     VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
                     [weakself.navigationController pushViewController:vc animated:YES];
                 }];
                 
+                [weakself.camera sk_startRecording];
+
+
                 
-//                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
-//                    
-//                    NSLog(@"outputFileUrl = %@",outputFileUrl);
-//                    // outputFileUrl = file:///var/mobile/Containers/Data/Application/06BFE4E8-5B70-4D0A-BC7D-64AC6FEDB9B9/Documents/SKCameraVideo/1495621335test.mp4
-//                    
-//                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
-//                    [weakself.navigationController pushViewController:vc animated:YES];
-//                }];
+                /*
+                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+                    NSLog(@"outputFileUrl = %@",outputFileUrl);
+                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
+                    [weakself.navigationController pushViewController:vc animated:YES];
+                }];
+                 */
             }
         };
         
         _bottomControlView.recordCircleView.stopRecordingVideo = ^(UIButton *button) {
             
-            if ([weakself.camera isRecording]) {
-                NSLog(@"stop record");
-//                [weakself.camera stopRecording];
-                
-                [weakself.camera stopRectRecording];
-
-            }
+            [weakself.camera sk_stopRecording];
+            
+//            if ([weakself.camera isRecording]) {
+//                NSLog(@"stop record");
+////                [weakself.camera stopRecording];
+//                [weakself.camera stopRectRecording];
+//
+//            }
         };
     }
     return _bottomControlView;

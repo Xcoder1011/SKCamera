@@ -14,16 +14,13 @@
 		BC15C1F01ECEC68A00CEF6F8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1EE1ECEC68A00CEF6F8 /* Main.storyboard */; };
 		BC15C1F21ECEC68A00CEF6F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */; };
 		BC15C1F51ECEC68A00CEF6F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC15C1F31ECEC68A00CEF6F8 /* LaunchScreen.storyboard */; };
+		BC15CAEF1EFBC67700FFAFEF /* UIImage+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15CAEE1EFBC67700FFAFEF /* UIImage+Utils.m */; };
+		BC15CAF21EFBC7C500FFAFEF /* SKCamera+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15CAF11EFBC7C500FFAFEF /* SKCamera+Helper.m */; };
 		BC29A95E1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m in Sources */ = {isa = PBXBuildFile; fileRef = BC29A95D1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m */; };
 		BC29A9611ED6E61500802435 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = BC29A9601ED6E61500802435 /* SKButton.m */; };
-		BC3385D91EF3A5BC0052A9D3 /* SKCameraWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */; };
 		BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35041ED2C0B9000AD97F /* RecordViewController.m */; };
 		BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350A1ED2E05D000AD97F /* CircleProgressView.m */; };
-		BCED35131ED2E911000AD97F /* SKCamera+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */; };
 		BCED35141ED2E911000AD97F /* SKCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35101ED2E911000AD97F /* SKCamera.m */; };
-		BCED35151ED2E911000AD97F /* UIImage+FixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */; };
-		BCED35311ED2EB92000AD97F /* UIImage+Crop.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */; };
-		BCED35321ED2EB92000AD97F /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */; };
 		BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED353C1ED2EE33000AD97F /* ViewUtils.m */; };
 		BCED35411ED2F77B000AD97F /* TopControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35401ED2F77B000AD97F /* TopControlView.m */; };
 		BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35461ED2F7DA000AD97F /* BottomControlView.m */; };
@@ -46,26 +43,20 @@
 		BC15C1F11ECEC68A00CEF6F8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BC15C1F41ECEC68A00CEF6F8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BC15C1F61ECEC68A00CEF6F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BC15CAED1EFBC67700FFAFEF /* UIImage+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Utils.h"; sourceTree = "<group>"; };
+		BC15CAEE1EFBC67700FFAFEF /* UIImage+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Utils.m"; sourceTree = "<group>"; };
+		BC15CAF01EFBC7C500FFAFEF /* SKCamera+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SKCamera+Helper.h"; sourceTree = "<group>"; };
+		BC15CAF11EFBC7C500FFAFEF /* SKCamera+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SKCamera+Helper.m"; sourceTree = "<group>"; };
 		BC29A95C1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+PreventMultipleClicks.h"; sourceTree = "<group>"; };
 		BC29A95D1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+PreventMultipleClicks.m"; sourceTree = "<group>"; };
 		BC29A95F1ED6E61500802435 /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
 		BC29A9601ED6E61500802435 /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
-		BC3385D71EF3A5BC0052A9D3 /* SKCameraWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCameraWriter.h; sourceTree = "<group>"; };
-		BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCameraWriter.m; sourceTree = "<group>"; };
 		BCED35031ED2C0B9000AD97F /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
 		BCED35041ED2C0B9000AD97F /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
 		BCED35091ED2E05D000AD97F /* CircleProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CircleProgressView.h; sourceTree = "<group>"; };
 		BCED350A1ED2E05D000AD97F /* CircleProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CircleProgressView.m; sourceTree = "<group>"; };
-		BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SKCamera+Helper.h"; sourceTree = "<group>"; };
-		BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SKCamera+Helper.m"; sourceTree = "<group>"; };
 		BCED350F1ED2E911000AD97F /* SKCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKCamera.h; sourceTree = "<group>"; };
 		BCED35101ED2E911000AD97F /* SKCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKCamera.m; sourceTree = "<group>"; };
-		BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+FixOrientation.h"; sourceTree = "<group>"; };
-		BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+FixOrientation.m"; sourceTree = "<group>"; };
-		BCED352B1ED2EB92000AD97F /* UIImage+Crop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Crop.h"; sourceTree = "<group>"; };
-		BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Crop.m"; sourceTree = "<group>"; };
-		BCED352D1ED2EB92000AD97F /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
-		BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		BCED35341ED2EBE6000AD97F /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		BCED353B1ED2EE33000AD97F /* ViewUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewUtils.h; sourceTree = "<group>"; };
 		BCED353C1ED2EE33000AD97F /* ViewUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewUtils.m; sourceTree = "<group>"; };
@@ -206,12 +197,10 @@
 			children = (
 				BCED350F1ED2E911000AD97F /* SKCamera.h */,
 				BCED35101ED2E911000AD97F /* SKCamera.m */,
-				BC3385D71EF3A5BC0052A9D3 /* SKCameraWriter.h */,
-				BC3385D81EF3A5BC0052A9D3 /* SKCameraWriter.m */,
-				BCED350D1ED2E911000AD97F /* SKCamera+Helper.h */,
-				BCED350E1ED2E911000AD97F /* SKCamera+Helper.m */,
-				BCED35111ED2E911000AD97F /* UIImage+FixOrientation.h */,
-				BCED35121ED2E911000AD97F /* UIImage+FixOrientation.m */,
+				BC15CAED1EFBC67700FFAFEF /* UIImage+Utils.h */,
+				BC15CAEE1EFBC67700FFAFEF /* UIImage+Utils.m */,
+				BC15CAF01EFBC7C500FFAFEF /* SKCamera+Helper.h */,
+				BC15CAF11EFBC7C500FFAFEF /* SKCamera+Helper.m */,
 			);
 			path = SKCamera;
 			sourceTree = "<group>";
@@ -219,10 +208,6 @@
 		BCED352A1ED2EB92000AD97F /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				BCED352B1ED2EB92000AD97F /* UIImage+Crop.h */,
-				BCED352C1ED2EB92000AD97F /* UIImage+Crop.m */,
-				BCED352D1ED2EB92000AD97F /* UIImage+Resize.h */,
-				BCED352E1ED2EB92000AD97F /* UIImage+Resize.m */,
 				BC29A95C1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.h */,
 				BC29A95D1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m */,
 				BC29A95F1ED6E61500802435 /* SKButton.h */,
@@ -356,22 +341,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BCED35311ED2EB92000AD97F /* UIImage+Crop.m in Sources */,
 				BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */,
 				BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */,
-				BC3385D91EF3A5BC0052A9D3 /* SKCameraWriter.m in Sources */,
-				BCED35151ED2E911000AD97F /* UIImage+FixOrientation.m in Sources */,
 				BC29A95E1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m in Sources */,
 				BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */,
 				BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */,
-				BCED35131ED2E911000AD97F /* SKCamera+Helper.m in Sources */,
+				BC15CAEF1EFBC67700FFAFEF /* UIImage+Utils.m in Sources */,
 				BCED35411ED2F77B000AD97F /* TopControlView.m in Sources */,
 				BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */,
+				BC15CAF21EFBC7C500FFAFEF /* SKCamera+Helper.m in Sources */,
 				BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */,
 				BCED35141ED2E911000AD97F /* SKCamera.m in Sources */,
 				BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */,
 				BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */,
-				BCED35321ED2EB92000AD97F /* UIImage+Resize.m in Sources */,
 				BC29A9611ED6E61500802435 /* SKButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

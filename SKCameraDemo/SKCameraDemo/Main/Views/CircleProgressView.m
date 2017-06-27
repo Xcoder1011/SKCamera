@@ -14,7 +14,7 @@
 #define SKDegreesToRadians(x) (M_PI*(x)/180.0)
 
 //Defalut value
-#define SKTotalTime               (10)
+#define SKTotalTime               (100)
 #define SKProgressLineWidth       (kscaleDeviceWidth(12))
 #define SKProgressLineColor       [UIColor whiteColor]
 

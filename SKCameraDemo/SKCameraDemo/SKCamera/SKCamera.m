@@ -9,13 +9,12 @@
 #import "SKCamera.h"
 
 #import <ImageIO/CGImageProperties.h>
-#import "UIImage+FixOrientation.h"
+#import "UIImage+Utils.h"
 #import "SKCamera+Helper.h"
-#import "SKCameraWriter.h"
 
 
 @interface SKCamera () <AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate,
-AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate, SKCameraWriterDelegate>
+AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate >
 {
     UIView *_previewView;
     int _beginSessionConfigurationCount;
@@ -26,6 +25,19 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
     BOOL _useAssetWriter;
     
     CMTime _currentSampleTime;
+    // 需要录制的区域 frame
+    CGRect _cropFrame;
+    
+    CMTime  _startRecordTime; // 开始录制的时间
+    CGFloat _currentRecordTime; // 当前录制时间
+    
+    CGFloat _maxRecordTime; // 录制最长时间
+    
+    
+    CMTime _timeOffset;//录制的偏移CMTime
+    CMTime _lastVideoTime;//记录上一次视频数据文件的CMTime
+    CMTime _lastAudioTime;//记录上一次音频数据文件的CMTime
+
 }
 
 @property (strong, nonatomic) AVCaptureSession           *session;   // 捕捉视频会话
@@ -79,6 +91,14 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
 
 @property (readonly, nonatomic) NSError *__nullable error;
 
+/**
+ * readwrite
+ */
+@property (nonatomic, getter=isRecording , readwrite)  BOOL recording; // 是否正在录制
+@property (nonatomic, getter=isPaused ,    readwrite)  BOOL paused;  // 是否暂停
+@property (nonatomic, getter=isDiscont ,   readwrite)  BOOL discont; // 是否中断
+
+
 @end
 
 
@@ -116,7 +136,11 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if(self) {
         [self setupWithQuality:quality position:position videoEnabled:YES];
         [self _initialWithSKCmaera];
-        self.delegate = delegate;
+        if (delegate) {
+            self.delegate = delegate;
+        } else {
+            self.delegate = self;
+        }
     }
     return self;
 }
@@ -145,8 +169,9 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     _photoOutputEnabled = YES;
     _faceDetectEnabled = NO;
     
-    _beginSessionConfigurationCount = 0;
+    _maxRecordTime = 60.f;
     
+    _beginSessionConfigurationCount = 0;
 }
 
 -(void)_initialWithSKCmaera {
@@ -263,7 +288,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 - (void)stopRunnig
 {
     [self.session stopRunning];
-    self.session = nil;
 }
 
 - (BOOL)prepare:(NSError **)error {
@@ -415,7 +439,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 
 
 
-
 - (void)initialize
 {
     if(!_session) {
@@ -496,17 +519,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         _videoOutputAdded = NO;
         if (self.videoOutputEnabled) {
             
-            _videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
-            _videoDataOutput.alwaysDiscardsLateVideoFrames = YES; // 指定接收器是否应始终丢弃在捕获下一帧之前未处理的任何视频帧。
-            _videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCMPixelFormat_32BGRA]}; // DEFAULT
-            [_videoDataOutput setSampleBufferDelegate:self queue:_sessionQueue];
-            
-            if (![self.session.outputs containsObject:_videoDataOutput]) {
+            if (![self.session.outputs containsObject:self.videoDataOutput]) {
                 
-                if ([self.session canAddOutput:_videoDataOutput]) {
-                    [self.session addOutput:_videoDataOutput];
+                if ([self.session canAddOutput:self.videoDataOutput]) {
+                    [self.session addOutput:self.videoDataOutput];
                     _videoOutputAdded = YES;
-                    _videoConnection = [_videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
+                    _videoConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
                     
                     if(_videoConnection.isVideoStabilizationSupported){
                         _videoConnection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
@@ -528,14 +546,11 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         _audioOutputAdded = NO;
         if (self.audioOutputEnabled) {
             
-            _audioDataOutput = [[AVCaptureAudioDataOutput alloc] init];
-            [_audioDataOutput setSampleBufferDelegate:self queue:_sessionQueue];
-            
-            if (![self.session.outputs containsObject:_audioDataOutput]) {
-                if ([self.session canAddOutput:_audioDataOutput]) {
-                    [self.session addOutput:_audioDataOutput];
+            if (![self.session.outputs containsObject:self.audioDataOutput]) {
+                if ([self.session canAddOutput:self.audioDataOutput]) {
+                    [self.session addOutput:self.audioDataOutput];
                     _audioOutputAdded = YES;
-                    _audioConnection = [_audioDataOutput connectionWithMediaType:AVMediaTypeAudio];
+                    _audioConnection = [self.audioDataOutput connectionWithMediaType:AVMediaTypeAudio];
                     
                 } else {
                     if (error == nil) {
@@ -593,15 +608,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                 _metadataOutputAdded = YES;
             }
         }
-        
-        // add record
-//        if (_needRecord) {
-//            _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-//            [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
-//            if([self.session canAddOutput:_movieFileOutput]) {
-//                [self.session addOutput:_movieFileOutput];
-//            }
-//        }
         
         //  default whiteBalanceMode
         self.whiteBalanceMode = AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance;
@@ -748,6 +754,16 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         [self enableTorch:YES];
     }
     
+    [self.session beginConfiguration];
+    if (!_movieFileOutput) {
+        _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+        [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
+        if([self.session canAddOutput:_movieFileOutput]) {
+            [self.session addOutput:_movieFileOutput];
+        }
+    }
+    [self.session commitConfiguration];
+    
     for(AVCaptureConnection *connection in [self.movieFileOutput connections]) {
         for (AVCaptureInputPort *port in [connection inputPorts]) {
             if ([[port mediaType] isEqual:AVMediaTypeVideo]) {
@@ -791,7 +807,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
  *
  * @param url   视频输出的url
  */
-- (void)startRecordingWithOutputUrl:(NSURL *)url  cropSize:(CGSize)cropSize didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock {
+- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock {
 
     if(!self.videoEnabled) {
         NSError *error = [SKCamera createError:@"Video enables did not set YES" code:SKCameraErrorCodeVideoNotEnabled];
@@ -809,14 +825,19 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         [self enableTorch:YES];
     }
     
+    if (cropFrame.size.width && cropFrame.size.height) {
+        _cropFrame = cropFrame;
+    } else {
+        NSError *error = [SKCamera createError:@"cropFrame.size should not set CGSizeZero" code:SKCameraErrorCodeVideoNotEnabled];
+        [self passError:error];
+    }
+    
     self.didRecordCompletionBlock = completionBlock;
     
     unlink([[url path] UTF8String]);
     
-    [self createWriter:url cropSize:cropSize];
+    [self createWriter:url cropSize:CGSizeMake(cropFrame.size.width, cropFrame.size.height)];
     
-    _useAssetWriter = YES;
-    self.recording = YES;
     if(self.onStartRecording) self.onStartRecording(self);
 
 }
@@ -825,9 +846,13 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 - (void)createWriter:(NSURL *)assetUrl  cropSize:(CGSize)cropSize {
     
     self.videoWriter = [AVAssetWriter assetWriterWithURL:assetUrl fileType:AVFileTypeMPEG4 error:nil];
+    //使其更适合在网络上播放
+    self.videoWriter.shouldOptimizeForNetworkUse = YES;
     
     int videoWidth = cropSize.width;
     int videoHeight =cropSize.height;
+    
+    
    
     NSDictionary *outputSettings = @{
                                      AVVideoCodecKey : AVVideoCodecH264,
@@ -836,6 +861,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                                      AVVideoScalingModeKey:AVVideoScalingModeResizeAspectFill,
                                      };
     self.videoAssetWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
+    // 表明输入是否应该调整其处理为实时数据源的数据
     self.videoAssetWriterInput.expectsMediaDataInRealTime = YES;
     self.videoAssetWriterInput.transform = CGAffineTransformMakeRotation(M_PI / 2.0);
     
@@ -851,15 +877,15 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     self.audioAssetWriterInput.expectsMediaDataInRealTime = YES;
     
     
-    NSDictionary *SPBADictionary = @{
-                                     (__bridge NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
-                                     (__bridge NSString *)kCVPixelBufferWidthKey : @(videoWidth),
-                                     (__bridge NSString *)kCVPixelBufferHeightKey  : @(videoHeight),
-                                     (__bridge NSString *)kCVPixelFormatOpenGLESCompatibility : ((__bridge NSNumber *)kCFBooleanTrue)
-                                     };
-    
-    
-    self.pixelBufferAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:self.videoAssetWriterInput sourcePixelBufferAttributes:SPBADictionary];
+//    NSDictionary *SPBADictionary = @{
+//                                     (__bridge NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
+//                                     (__bridge NSString *)kCVPixelBufferWidthKey : @(videoWidth),
+//                                     (__bridge NSString *)kCVPixelBufferHeightKey  : @(videoHeight),
+//                                     (__bridge NSString *)kCVPixelFormatOpenGLESCompatibility : ((__bridge NSNumber *)kCFBooleanTrue)
+//                                     };
+//    
+//    
+//    self.pixelBufferAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:self.videoAssetWriterInput sourcePixelBufferAttributes:SPBADictionary];
     
     if ([self.videoWriter canAddInput:self.videoAssetWriterInput]) {
         [self.videoWriter addInput:self.videoAssetWriterInput];
@@ -873,6 +899,112 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     }
 }
 
+
+/**
+ * 开启录制功能
+ */
+- (void)sk_enableRecording {
+    _startRecordTime = CMTimeMake(0, 0);
+    self.recording = NO;
+    self.paused = NO;
+    self.discont = NO;
+    [self startRunnig];
+}
+
+/**
+ * 关闭录制功能
+ */
+- (void)sk_shutRecording {
+    
+    _startRecordTime = CMTimeMake(0, 0);
+ 
+    if ([self.session isRunning]) {
+        [self stopRunnig];
+    }
+}
+
+
+
+/**
+ * 开始录制视频  (可以设置 录制的 区域)
+ */
+- (void)sk_startRecording {
+    
+    @synchronized (self) {
+        if (!self.isRecording) {
+            self.paused = NO;
+            self.discont = NO;
+            self.recording = YES;
+            _useAssetWriter = YES;
+            _timeOffset= CMTimeMake(0, 0);
+        }
+    }
+}
+
+
+/**
+ * 暂停录制视频
+ */
+- (void)sk_pauseRecording {
+    
+    @synchronized (self) {
+        if (self.isRecording) {
+            self.paused = YES;
+            self.discont = YES;
+        }
+    }
+}
+
+
+/**
+ * 继续录制视频
+ */
+- (void)sk_resumeRecording {
+
+    @synchronized (self) {
+        if (self.isPaused) {
+            self.paused = NO;
+        }
+    }
+}
+
+/**
+ * 停止录制视频
+ */
+- (void)sk_stopRecording {
+    
+    [self sk_pauseRecording];
+    
+    @synchronized (self) {
+        if (self.isRecording) {
+            self.recording = NO;
+            _useAssetWriter = NO;
+
+            dispatch_async(_sessionQueue, ^{
+                
+                if (self.videoWriter) {
+                    
+                    [self.videoWriter finishWritingWithCompletionHandler:^{
+                        NSLog(@"写完了");
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self enableTorch:NO];
+                            self.recording = NO;
+                            _startRecordTime = CMTimeMake(0, 0);
+                            _currentRecordTime = 0;
+                            
+                            if(self.didRecordCompletionBlock) {
+                                self.didRecordCompletionBlock(self, self.videoWriter.outputURL, nil);
+                                // self.videoWriter = nil;
+                                // self.pixelBufferAdaptor = nil;
+                            }
+                        });
+                    }];
+                }
+            });
+            
+        }
+    }
+}
 
 /**
  * 停止录制视频 (可以设置 录制的 区域)
@@ -902,6 +1034,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             if(self.didRecordCompletionBlock) {
                 self.didRecordCompletionBlock(self, self.videoWriter.outputURL, nil);
                 self.videoWriter = nil;
+                self.pixelBufferAdaptor = nil;
             }
         });
     }];
@@ -910,36 +1043,164 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
 }
 
+
+//调整媒体数据的时间
+- (CMSampleBufferRef)adjustTime:(CMSampleBufferRef)sample by:(CMTime)offset {
+    CMItemCount count;
+    CMSampleBufferGetSampleTimingInfoArray(sample, 0, nil, &count);
+    CMSampleTimingInfo* pInfo = malloc(sizeof(CMSampleTimingInfo) * count);
+    CMSampleBufferGetSampleTimingInfoArray(sample, count, pInfo, &count);
+    for (CMItemCount i = 0; i < count; i++) {
+        pInfo[i].decodeTimeStamp = CMTimeSubtract(pInfo[i].decodeTimeStamp, offset);
+        pInfo[i].presentationTimeStamp = CMTimeSubtract(pInfo[i].presentationTimeStamp, offset);
+    }
+    CMSampleBufferRef sout;
+    CMSampleBufferCreateCopyWithNewTiming(nil, sample, count, pInfo, &sout);
+    free(pInfo);
+    return sout;
+}
+
 #pragma mark - AVCaptureVideoDataOutputSampleBufferDelegate
 
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     
-    if (! self.isRecording || !_useAssetWriter) {
+    
+    @synchronized (self) {
+        
+        if (! self.isRecording  || ! _useAssetWriter || self.isPaused) {
+            return;
+        }
+        
+        if (self.discont) {
+            
+            if (captureOutput == self.videoDataOutput) { // video
+                return;
+            }
+            
+            self.discont = NO;
+            // 计算暂停的时间
+            CMTime pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+            CMTime last = (captureOutput == self.videoDataOutput ? _lastVideoTime : _lastAudioTime ) ;
+            
+            if (last.flags & kCMTimeFlags_Valid) {
+                
+                if (_timeOffset.flags & kCMTimeFlags_Valid) {
+                    
+                    pts = CMTimeSubtract(pts, _timeOffset);
+                }
+                
+                CMTime offset = CMTimeSubtract(pts, last);
+                
+                if (_timeOffset.value == 0) {
+                    _timeOffset = offset;
+                } else {
+                
+                    _timeOffset = CMTimeAdd(_timeOffset, offset);
+                }
+                
+            }
+            
+            _lastAudioTime.flags = 0;
+            _lastAudioTime.flags = 0;
+        }
+        
+        CFRetain(sampleBuffer);
+        if (_timeOffset.value  > 0) {
+            CFRelease(sampleBuffer);
+            sampleBuffer = [self adjustTime:sampleBuffer by:_timeOffset];
+
+        }
+        
+        // 记录暂停上一次录制的时间
+        CMTime pts = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+        CMTime duration = CMSampleBufferGetDuration(sampleBuffer) ;
+        
+        if (duration.value > 0) {
+            pts = CMTimeAdd(pts, duration);
+        }
+        
+        if (captureOutput == self.videoDataOutput) { // video
+            _lastVideoTime = pts;
+        } else {
+            _lastAudioTime = pts;
+        }
+    }
+    
+    CMTime duration = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+    if (_startRecordTime.value == 0) {
+        _startRecordTime = duration;
+    }
+
+    CMTime sub = CMTimeSubtract(duration, _startRecordTime);
+    _currentRecordTime = CMTimeGetSeconds(sub);
+    
+    if (_currentRecordTime > _maxRecordTime) { // 超过最长时间
+        if (_currentRecordTime - _maxRecordTime < 0.1) {
+            // preogress
+        }
         return;
     }
     
-    @autoreleasepool {
+    // preogress delegate
+    
+    
+
+    if (CMSampleBufferDataIsReady(sampleBuffer)) {
         
-        _currentSampleTime = CMSampleBufferGetOutputPresentationTimeStamp(sampleBuffer);
+//        __block CVPixelBufferRef pixelBuffer = NULL;
+//
+//        @autoreleasepool {
+//            
+//            UIImage *originImage = [SKCamera imageFromSampleBuffer:sampleBuffer]; //  {1280, 720}
+//            
+//            CGFloat distanceY = originImage.size.height *  _cropFrame.origin.y / [self previewView].size.width;
+//            
+//            CGFloat distanceX = originImage.size.width *  _cropFrame.origin.x / [self previewView].size.height;
+//            
+//            UIImage *cropImage = [originImage croppedImageWithFrame:CGRectMake(distanceY, distanceX, _cropFrame.size.width , _cropFrame.size.height)];// 横向的图片 cropImage.size = {720, 720}
+//            
+//            dispatch_async_on_main_queue(^{
+//                
+//                if (cropImage) {
+//                    NSLog(@"originImage.size = %@",NSStringFromCGSize(originImage.size));
+//                    NSLog(@"distanceY = %f \n distanceX = %f ", distanceY,distanceX);
+//                    NSLog(@"cropImage.size = %@",NSStringFromCGSize(cropImage.size));
+//                    if (weakself.handleRecording) {
+//                        weakself.handleRecording(cropImage);
+//                    }
+//                }
+//            });
+//            
+////            pixelBuffer = [SKCamera pixelBufferFromCGImage:cropImage.CGImage];
+//
+//        }
         
-        if (self.videoWriter.status != AVAssetWriterStatusWriting) {
+        if (self.videoWriter.status == AVAssetWriterStatusUnknown && captureOutput == self.videoDataOutput) {
+            
+            CMTime startTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
             [self.videoWriter startWriting];
-            [self.videoWriter startSessionAtSourceTime:_currentSampleTime];
+            [self.videoWriter startSessionAtSourceTime:startTime];
         }
-        if (captureOutput == self.videoDataOutput) {
-            if (self.pixelBufferAdaptor.assetWriterInput.isReadyForMoreMediaData) {
-                CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-                BOOL success = [self.pixelBufferAdaptor appendPixelBuffer:pixelBuffer withPresentationTime:_currentSampleTime];
-                if (!success) {
-                    NSLog(@"Pixel Buffer没有append成功");
-                }
+        
+        if (self.videoWriter.status == AVAssetWriterStatusFailed ) {
+            NSLog(@"writer error %@", self.videoWriter.error.localizedDescription);
+            return;
+        }
+        
+        if (captureOutput == self.videoDataOutput) { // video
+            if (self.videoAssetWriterInput.readyForMoreMediaData == YES) {
+                [self.videoAssetWriterInput appendSampleBuffer:sampleBuffer];
+            }
+        } else { // audio
+            if (self.audioAssetWriterInput.readyForMoreMediaData == YES) {
+                [self.audioAssetWriterInput appendSampleBuffer:sampleBuffer];
             }
         }
-        if (captureOutput == self.audioDataOutput) {
-            [self.audioAssetWriterInput appendSampleBuffer:sampleBuffer];
-        }
     }
+    
+    CFRelease(sampleBuffer);
+
 }
 
 
@@ -960,29 +1221,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         self.didRecordCompletionBlock(self, outputFileURL, error);
     }
 }
-
-#pragma mark  SKCameraWriterDelegate
-
-- (void)videoWriterDidStartRecording:(SKCameraWriter *)writer {
-    
-    self.recording = YES;
-    _useAssetWriter = YES;
-//    if(self.onStartRecording) self.onStartRecording(self);
-
-}
-
-- (void)videoWriterDidFinishRecording:(SKCameraWriter *)writer outputUrl:(NSURL *)outputUrl {
-    
-    self.recording = NO;
-    [self enableTorch:NO];
-    self.videoWriter = nil;
-    _useAssetWriter = YES;
-
-    if(self.didRecordCompletionBlock) {
-        self.didRecordCompletionBlock(self, outputUrl, nil);
-    }
-}
-
 
 - (void)enableTorch:(BOOL)enabled
 {
@@ -1114,8 +1352,22 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return;
     }
     
-    AVCaptureConnection *videoConnection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+    if (!_movieFileOutput) {
+        _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+        [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
+    }
+    
+    for(AVCaptureConnection *connection in [self.movieFileOutput connections]) {
+        for (AVCaptureInputPort *port in [connection inputPorts]) {
+            if ([[port mediaType] isEqual:AVMediaTypeVideo]) {
+                if ([connection isVideoOrientationSupported]) {
+                    [connection setVideoOrientation:[self orientationForConnection]];
+                }
+            }
+        }
+    }
 
+    AVCaptureConnection *videoConnection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
     AVCaptureConnection *pictureConnection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
     
     switch (mirror) {
@@ -1222,7 +1474,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     self.videoCaptureDevice = device;
     self.videoDeviceInput = videoInput;
     
-//    [self setMirror:_mirror];
+    [self setMirror:_mirror];
 }
 
 
@@ -1344,7 +1596,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         _videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         _videoDataOutput.alwaysDiscardsLateVideoFrames = YES; // 指定接收器是否应始终丢弃在捕获下一帧之前未处理的任何视频帧。
         _videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCMPixelFormat_32BGRA]}; // DEFAULT
-        [_videoDataOutput setSampleBufferDelegate:self queue:_sessionQueue];
+        [_videoDataOutput setSampleBufferDelegate:self.delegate queue:_sessionQueue];
     }
     return _videoDataOutput;
 }
@@ -1353,7 +1605,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     if (!_audioDataOutput) {
         _audioDataOutput = [[AVCaptureAudioDataOutput alloc] init];
-        [_audioDataOutput setSampleBufferDelegate:self queue:_sessionQueue];
+        [_audioDataOutput setSampleBufferDelegate:self.delegate queue:_sessionQueue];
     }
     return _audioDataOutput;
 }
@@ -1452,6 +1704,8 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 
 - (void)dealloc {
     [self stopRunnig];
+    self.session = nil;
+
 }
 
 #pragma mark - Class Methods

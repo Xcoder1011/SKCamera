@@ -1,13 +1,35 @@
+//
+//  SKCamera+Helper.h
+//  SKCamera
+//
+//  Created by KUN on 17/1/13.
+//  Copyright © 2017年 NULL. All rights reserved.
+//
 
 #import "SKCamera.h"
 
 @interface SKCamera (Helper)
 
+/**
+ CMSampleBufferRef 转 UIImage
+ */
++ (UIImage *) imageFromSampleBuffer:(CMSampleBufferRef) sampleBuffer;
 
+//CMSampleBufferRef转换成image
++(UIImage *) imageFromSampleBuffer2:(CMSampleBufferRef) sampleBuffer;
+
+//CMSampleBufferRef转换成image
++(UIImage *) imageFromSampleBuffer3:(CMSampleBufferRef) sampleBuffer;
+
+
+
++ (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image ;
+
++ (CVPixelBufferRef)pixelBufferFromCGImage2:(CGImageRef)image;
 
 /**
  视频剪切
-
+ 
  @param videoPath 原视频文件
  @param totalPath 剪切后保存的地址
  @param videoSize 剪切区域的大小
@@ -30,5 +52,8 @@
                                                  ports:(NSArray<AVCaptureInputPort *> *)ports;
 
 - (UIImage *)cropImage:(UIImage *)image usingPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+
+
+void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize finalSize, CMSampleBufferRef *sampleBuffer);
 
 @end

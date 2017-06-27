@@ -84,6 +84,12 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  */
 @property (nonatomic, copy) void (^onStartRecording)(SKCamera *camera);
 
+
+/**
+ * 录视频回调
+ */
+@property (nonatomic, copy) void (^handleRecording)(UIImage *image);
+
 /**
  * 视频质量  eg. AVCaptureSessionPresetHigh
  */
@@ -121,15 +127,19 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  *  是否需要录制视频文件
  *  Default is DisEnabled
  */
-@property (nonatomic, getter=isNeedRecord) BOOL needRecord;
-
-@property (nonatomic, getter=isVideoEnabled) BOOL videoEnabled;
-
-@property (nonatomic, getter=isRecording) BOOL recording;
-
+@property (nonatomic, getter=isNeedRecord)     BOOL needRecord;
+@property (nonatomic, getter=isVideoEnabled)   BOOL videoEnabled;
 @property (nonatomic, getter=isZoomingEnabled) BOOL zoomingEnabled;
 
+/**
+ * readonly
+ */
+@property (nonatomic, getter=isRecording , readonly)  BOOL recording; // 是否正在录制
+@property (nonatomic, getter=isPaused ,    readonly)  BOOL paused;  // 是否暂停
+@property (nonatomic, getter=isDiscont ,   readonly)  BOOL discont; // 是否中断
+
 //@property (nonatomic, assign) CGFloat maxScale;
+
 
 @property (nonatomic) BOOL fixOrientationAfterCapture;
 
@@ -179,6 +189,9 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 -(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture;
 
 
+// ################################################   录制 preview 区域     ########################################
+
+
 /*
  * 开始录制视频
  *
@@ -193,17 +206,50 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 
 
 
+
+// ################################################   可以 录制 自定义 区域     ########################################
+
+
 /*
- * 开始录制视频   (可以设置 录制的 区域)
+ * 设置录制视频 相关信息
  *
  * @param url   视频输出的url
  */
-- (void)startRecordingWithOutputUrl:(NSURL *)url  cropSize:(CGSize)cropSize didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock;
+- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock;
+
 
 /**
- * 停止录制视频 (可以设置 录制的 区域)
+ * 开启录制功能
  */
-- (void)stopRectRecording;
+- (void)sk_enableRecording ;
+
+/**
+ * 关闭录制功能
+ */
+- (void)sk_shutRecording ;
+
+
+/**
+ * 开始录制视频  (可以设置 录制的 区域)
+ */
+- (void)sk_startRecording;
+
+
+/**
+ * 暂停录制视频
+ */
+- (void)sk_pauseRecording;
+
+
+/**
+ * 继续录制视频
+ */
+- (void)sk_resumeRecording;
+
+/**
+ * 停止录制视频
+ */
+- (void)sk_stopRecording;
 
 
 /**
