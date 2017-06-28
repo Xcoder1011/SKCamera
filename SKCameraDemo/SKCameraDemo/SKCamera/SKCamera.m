@@ -11,7 +11,7 @@
 #import <ImageIO/CGImageProperties.h>
 #import "UIImage+Utils.h"
 #import "SKCamera+Helper.h"
-
+#import "SKOpenGLView.h"
 
 @interface SKCamera () <AVCaptureFileOutputRecordingDelegate, UIGestureRecognizerDelegate,
 AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate >
@@ -42,6 +42,8 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
 
 @property (strong, nonatomic) AVCaptureSession           *session;   // 捕捉视频会话
 @property (strong, nonatomic) AVCaptureVideoPreviewLayer *captureVideoPreviewLayer; // 视频显示layer
+@property (strong ,  nonatomic) SKOpenGLView *openGLView;
+
 @property (strong, nonatomic) AVCaptureDeviceInput       *audioDeviceInput; // 麦克风输入
 @property (strong, nonatomic) AVCaptureDeviceInput       *videoDeviceInput; // 视频输入
 @property (strong, nonatomic) AVCaptureDevice            *videoCaptureDevice;
@@ -454,6 +456,8 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         _captureVideoPreviewLayer.bounds = bounds;
         _captureVideoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
         
+        // [self openGLView];
+
         if (_previewView != nil) {  // new add
             [_previewView.layer insertSublayer:_captureVideoPreviewLayer atIndex:0];
             [self previewViewFrameChanged];
@@ -525,10 +529,15 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                     [self.session addOutput:self.videoDataOutput];
                     _videoOutputAdded = YES;
                     _videoConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
+//                    _videoConnection.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+//                    _videoConnection.automaticallyAdjustsVideoMirroring = NO;
                     
-                    if(_videoConnection.isVideoStabilizationSupported){
-                        _videoConnection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
+                    if ([_videoConnection isVideoOrientationSupported]) {
+                        [_videoConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
                     }
+//                    if(_videoConnection.isVideoStabilizationSupported){
+//                        _videoConnection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
+//                    }
                     
                 } else {
                     if (error == nil) {
@@ -1066,6 +1075,16 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     
     
+    /*
+     *  OpenGL  渲染 CMSampleBufferRef
+     *
+    if (captureOutput == self.videoDataOutput) { // video
+        [self.openGLView displayWithSampleBuffer:sampleBuffer];
+    }
+    return;
+     
+     */
+    
     @synchronized (self) {
         
         if (! self.isRecording  || ! _useAssetWriter || self.isPaused) {
@@ -1144,38 +1163,36 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     // preogress delegate
     
-    
+    kWeakObj(self)
 
     if (CMSampleBufferDataIsReady(sampleBuffer)) {
         
-//        __block CVPixelBufferRef pixelBuffer = NULL;
-//
-//        @autoreleasepool {
-//            
-//            UIImage *originImage = [SKCamera imageFromSampleBuffer:sampleBuffer]; //  {1280, 720}
-//            
-//            CGFloat distanceY = originImage.size.height *  _cropFrame.origin.y / [self previewView].size.width;
-//            
-//            CGFloat distanceX = originImage.size.width *  _cropFrame.origin.x / [self previewView].size.height;
-//            
-//            UIImage *cropImage = [originImage croppedImageWithFrame:CGRectMake(distanceY, distanceX, _cropFrame.size.width , _cropFrame.size.height)];// 横向的图片 cropImage.size = {720, 720}
-//            
-//            dispatch_async_on_main_queue(^{
-//                
-//                if (cropImage) {
-//                    NSLog(@"originImage.size = %@",NSStringFromCGSize(originImage.size));
-//                    NSLog(@"distanceY = %f \n distanceX = %f ", distanceY,distanceX);
-//                    NSLog(@"cropImage.size = %@",NSStringFromCGSize(cropImage.size));
+        __block CVPixelBufferRef pixelBuffer = NULL;
+
+        @autoreleasepool {
+            
+            UIImage *originImage = [SKCamera imageFromSampleBuffer:sampleBuffer]; //  {1280, 720}
+            
+            CGFloat distanceY = originImage.size.height *  _cropFrame.origin.y / [self previewView].size.width;
+            
+            CGFloat distanceX = originImage.size.width *  _cropFrame.origin.x / [self previewView].size.height;
+            
+            UIImage *cropImage = [originImage croppedImageWithFrame:CGRectMake(distanceY, distanceX, _cropFrame.size.width , _cropFrame.size.height)];// 横向的图片 cropImage.size = {720, 720}
+            
+            if (cropImage) {
+                
+//                dispatch_async_on_main_queue(^{
+//                    
 //                    if (weakself.handleRecording) {
 //                        weakself.handleRecording(cropImage);
 //                    }
-//                }
-//            });
-//            
-////            pixelBuffer = [SKCamera pixelBufferFromCGImage:cropImage.CGImage];
-//
-//        }
+//                });
+                
+                pixelBuffer = [SKCamera pixelBufferFromCGImage:cropImage.CGImage];
+            }
+        }
         
+    
         if (self.videoWriter.status == AVAssetWriterStatusUnknown && captureOutput == self.videoDataOutput) {
             
             CMTime startTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
@@ -1191,10 +1208,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         if (captureOutput == self.videoDataOutput) { // video
             if (self.videoAssetWriterInput.readyForMoreMediaData == YES) {
                 [self.videoAssetWriterInput appendSampleBuffer:sampleBuffer];
+               
             }
         } else { // audio
             if (self.audioAssetWriterInput.readyForMoreMediaData == YES) {
                 [self.audioAssetWriterInput appendSampleBuffer:sampleBuffer];
+                
             }
         }
     }
@@ -1237,6 +1256,17 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 }
 
 #pragma mark - Helpers
+
+
+- (SKOpenGLView *)openGLView
+{
+    if (_openGLView == nil) {
+        SKOpenGLView *glView = [[SKOpenGLView alloc] initWithFrame:self.previewView.bounds];
+        _openGLView = glView;
+        [self.previewView addSubview:_openGLView];
+    }
+    return _openGLView;
+}
 
 - (void)passError:(NSError *)error
 {
@@ -1352,23 +1382,27 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return;
     }
     
-    if (!_movieFileOutput) {
-        _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-        [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
-    }
+//    if (!_movieFileOutput) {
+//        _movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+//        [_movieFileOutput setMovieFragmentInterval:kCMTimeInvalid];
+//    }
     
-    for(AVCaptureConnection *connection in [self.movieFileOutput connections]) {
-        for (AVCaptureInputPort *port in [connection inputPorts]) {
-            if ([[port mediaType] isEqual:AVMediaTypeVideo]) {
-                if ([connection isVideoOrientationSupported]) {
-                    [connection setVideoOrientation:[self orientationForConnection]];
-                }
-            }
-        }
-    }
+//    for(AVCaptureConnection *connection in [self.videoDataOutput connections]) {
+//        for (AVCaptureInputPort *port in [connection inputPorts]) {
+//            if ([[port mediaType] isEqual:AVMediaTypeVideo]) {
+//                if ([connection isVideoOrientationSupported]) {
+//                    [connection setVideoOrientation:[self orientationForConnection]];
+//                }
+//            }
+//        }
+//    }
 
-    AVCaptureConnection *videoConnection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
+    AVCaptureConnection *videoConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
     AVCaptureConnection *pictureConnection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
+    
+    if ([videoConnection isVideoOrientationSupported]) {
+        [videoConnection setVideoOrientation:AVCaptureVideoOrientationPortraitUpsideDown];
+    }
     
     switch (mirror) {
         case SKCameraMirrorOff: {
@@ -1586,7 +1620,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 - (void)setPreviewView:(UIView *)previewView {
     
     _previewView = previewView;
-
+    
     [self addCustomGesture];
 }
 
@@ -1595,7 +1629,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if (!_videoDataOutput) {
         _videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         _videoDataOutput.alwaysDiscardsLateVideoFrames = YES; // 指定接收器是否应始终丢弃在捕获下一帧之前未处理的任何视频帧。
-        _videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCMPixelFormat_32BGRA]}; // DEFAULT
+        _videoDataOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]}; // DEFAULT
         [_videoDataOutput setSampleBufferDelegate:self.delegate queue:_sessionQueue];
     }
     return _videoDataOutput;
