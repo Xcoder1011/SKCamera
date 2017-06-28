@@ -228,7 +228,7 @@
             if (![weakself.camera isRecording]) {
                 NSLog(@"start record");
                 
-                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl() cropFrame:CGRectMake(0, kscaleDeviceWidth(240), 320, 320) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl() cropFrame:CGRectMake(0, kscaleDeviceWidth(240), 720, 720) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
                     
                     VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
                     [weakself.navigationController pushViewController:vc animated:YES];
