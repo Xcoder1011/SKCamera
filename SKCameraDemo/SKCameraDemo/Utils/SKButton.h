@@ -10,7 +10,28 @@
 
 @interface SKButton : UIButton
 
+// taret :self , SEL : clicAction block
 @property (nonatomic , copy) void(^clickAction)(UIButton *btn);
+
+@property(nonatomic, copy) SKButton *(^frame_)(CGRect frame);
+
+@property(nonatomic, copy) SKButton *(^title_)(NSString *title);
+
+@property(nonatomic, copy) SKButton *(^color_)(UIColor *color);
+
+@property(nonatomic, copy) SKButton *(^font_)(UIFont *font);
+
+@property(nonatomic, copy) SKButton *(^imageName_)(NSString *imageName);
+
+@property(nonatomic, copy) SKButton *(^hightlighImageName_)(NSString *hightlighImageName);
+
+@property(nonatomic, copy) SKButton *(^selectImageName_)(NSString *selectImageName);
+
+@property(nonatomic, copy) SKButton *(^target_and_Action_)(id target , SEL action);
+
+@property(nonatomic, copy) SKButton *(^clickAction_)(void(^clickAction)(UIButton *btn));
+
++ (instancetype)buttonWith:(void(^)(SKButton *btn))initblock;
 
 @end
 
@@ -26,7 +47,7 @@
                                    title:(NSString *)title
                               titleColor:(UIColor *)titleColor
                                titleFont:(UIFont *)titleFont
-                           clickAction:(void(^)(UIButton *btn))clickAction;
+                             clickAction:(void(^)(UIButton *btn))clickAction;
 
 
 // image button & SEL

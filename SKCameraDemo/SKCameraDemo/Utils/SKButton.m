@@ -11,7 +11,7 @@
 @implementation SKButton
 
 - (instancetype)initWithFrame:(CGRect)frame {
-
+    
     if (self = [super initWithFrame:frame]) {
         [self addTarget:self action:@selector(clickButton:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -19,13 +19,120 @@
 }
 
 - (void)clickButton:(UIButton *)btn {
-
+    
     if (self.clickAction) {
         self.clickAction(btn);
     }
 }
-@end
 
++ (instancetype)buttonWith:(void(^)(SKButton *btn))initblock {
+    
+    SKButton *btn = [SKButton buttonWithType:UIButtonTypeCustom];
+    if (initblock) {
+        initblock(btn);
+    }
+    return btn;
+}
+
+- (SKButton *(^)(CGRect))frame_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(CGRect rect) {
+        
+        weakself.frame = rect;
+        
+        return weakself;
+    };
+}
+
+- (SKButton *(^)(NSString *))title_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    SKButton * (^setTitle)(NSString *) = ^(NSString *str) {
+        
+        [weakself setTitle:str forState:UIControlStateNormal];
+        
+        return weakself;
+    };
+    
+    return setTitle;
+}
+
+- (SKButton *(^)(UIColor *))color_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(UIColor *color) {
+        
+        [weakself setTitleColor:color forState:0];
+        
+        return weakself;
+    };
+}
+
+- (SKButton *(^)(NSString *))imageName_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(NSString * name) {
+        
+        [weakself setImage:[UIImage imageNamed:name] forState:UIControlStateNormal];
+        
+        return self;
+    };
+}
+
+- (SKButton *(^)(NSString *))hightlighImageName_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(NSString * name) {
+        
+        [weakself setImage:[UIImage imageNamed:name] forState:UIControlStateHighlighted];
+        
+        return self;
+    };
+}
+
+- (SKButton *(^)(NSString *))selectImageName_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(NSString * name) {
+        
+        [weakself setImage:[UIImage imageNamed:name] forState:UIControlStateSelected];
+        
+        return self;
+    };
+}
+
+- (SKButton *(^)(id, SEL))target_and_Action_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(id target , SEL action) {
+        
+        [weakself addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
+        
+        return weakself;
+    };
+}
+
+- (SKButton *(^)(void (^)(UIButton *)))clickAction_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(void (^clickBlock)(UIButton *btn)) {
+        
+        weakself.clickAction = clickBlock;
+        
+        return self;
+    };
+}
+
+@end
 
 @implementation UIButton (Factory)
 
@@ -40,7 +147,7 @@
     }
     btn.clickAction = clickAction;
     return btn;
-
+    
 }
 
 + (UIButton *)createTitleButtonWithFrame:(CGRect)frame
@@ -69,7 +176,7 @@
                    selectImage:(NSString *)selectImageName
                      addTarget:(id)target
                         action:(SEL)action {
-
+    
     return [self buttonWithTitle:nil titleColor:nil titleFont:nil image:imageName highlighImage:hightlighImageName selectImage:selectImageName addTarget:target action:action];
 }
 
@@ -78,7 +185,7 @@
                      titleFont:(UIFont *)titleFont
                      addTarget:(id)target
                         action:(SEL)action {
-
+    
     return [self buttonWithTitle:buttonTitle titleColor:titleColor titleFont:titleFont image:nil highlighImage:nil selectImage:nil addTarget:target action:action];
 }
 

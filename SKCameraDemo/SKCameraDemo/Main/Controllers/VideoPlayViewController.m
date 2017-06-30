@@ -127,13 +127,20 @@
 //    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:beffect];
 //    [topControlView addSubview:effectView];
     
-    kWeakObj(self)
 
     // 1. dismissBtn
-    UIButton *dismissBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"off_" clickAction:^(UIButton *btn) {
+    
+    UIButton *dismissBtn = [SKButton buttonWith:^(SKButton *btn) {
         
-        [weakself.navigationController popViewControllerAnimated:YES];
+        btn.
+        
+        frame_(CGRectZero).
+        
+        imageName_(@"off_").
+        
+        target_and_Action_(self,@selector(dismissBtnAction));
     }];
+    
     
     [topControlView addSubview:dismissBtn];
     [self.view addSubview:topControlView];
@@ -155,7 +162,10 @@
     }];
 }
 
-
+- (void)dismissBtnAction {
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 -(void)configVideoPlayer {
     
