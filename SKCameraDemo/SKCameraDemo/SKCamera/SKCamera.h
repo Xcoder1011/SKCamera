@@ -52,7 +52,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 };
 
 
-
 @interface SKCamera : NSObject
 
 /**
@@ -89,6 +88,12 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * 录视频回调
  */
 @property (nonatomic, copy) void (^handleRecording)(UIImage *image);
+
+/**
+ * 录视频完成回调
+ */
+@property (nonatomic, copy) void (^didRecordCompletionBlock)(SKCamera *camera, NSURL *outputFileUrl, NSError *error);
+
 
 /**
  * 视频质量  eg. AVCaptureSessionPresetHigh
@@ -162,7 +167,7 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 
 
 /**
- * 在设置delegate 之前调用
+ * 在设置delegate 之后调用
  */
 - (void)prepare ;
 
@@ -189,33 +194,13 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 -(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture;
 
 
-// ################################################   录制 preview 区域     ########################################
-
-
-/*
- * 开始录制视频
- *
- * @param url   视频输出的url
- */
-- (void)startRecordingWithOutputUrl:(NSURL *)url didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock;
-
-/**
- * 停止录制视频
- */
-- (void)stopRecording;
-
-
-
-
-// ################################################   可以 录制 自定义 区域     ########################################
-
-
 /*
  * 设置录制视频 相关信息
  *
  * @param url   视频输出的url
+ * @param cropFrame   录制视频的宽高， 如果录制的是preview的区域,就传 CGRectZero ; 自定义区域的frame
  */
-- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame didRecord:(void (^)(SKCamera *camera, NSURL *outputFileUrl, NSError *error))completionBlock;
+- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame;
 
 
 /**
@@ -276,6 +261,9 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * 自定义 对焦 动画
  */
 - (void)alterFocusBox:(CALayer *)layer animation:(CAAnimation *)animation;
+
+// 销毁相机
+- (void)destroyCamera;
 
 
 #pragma mark - Class Methods

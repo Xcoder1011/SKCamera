@@ -9,16 +9,17 @@
 #import "RecordViewController.h"
 #import "SKCamera.h"
 #import "SKCamera+Helper.h"
-
 #import "BottomControlView.h"
 #import "TopControlView.h"
 #import "VideoPlayViewController.h"
 
 
 @interface RecordViewController ()
+
 @property (strong, nonatomic) SKCamera *camera;
 
 @property (strong, nonatomic) TopControlView *topControlView;
+
 @property (strong, nonatomic) BottomControlView *bottomControlView;
 
 @property (strong, nonatomic) UIView *preView;
@@ -48,10 +49,8 @@
     _imageView =[UIImageView new];
     
     [self.view addSubview:_preView];
-
     [self.view addSubview:self.topControlView];
     [self.view addSubview:self.bottomControlView];
-    
     [self.view addSubview:_imageView];
     [self.view bringSubviewToFront:self.imageView];
     
@@ -62,7 +61,6 @@
         make.height.mas_equalTo(kscaleDeviceWidth(240));
     }];
     
-    
     [self.bottomControlView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view.mas_bottom).offset(0);
         make.left.equalTo(self.view.mas_left).offset(0);
@@ -70,18 +68,9 @@
         make.height.mas_equalTo( self.view.height - self.view.width - kscaleDeviceWidth(240));
     }];
     
-//    [self.preView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.bottom.equalTo(self.bottomControlView.mas_top).offset( - 10);
-//        make.left.equalTo(self.view.mas_left).offset(0);
-////        make.right.equalTo(self.view.mas_right).offset(0);
-//        make.width.mas_equalTo(320);
-//        make.height.mas_equalTo(480);
-//    }];
-    
     [self.preView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view).insets(UIEdgeInsetsZero);
     }];
-    
     
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view.mas_bottom).offset(0);
@@ -103,12 +92,21 @@
     [self.camera prepare];
     
     kWeakObj(self)
+    
+    [self.camera setDidRecordCompletionBlock:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
+        
+        VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
+        [weakself.navigationController pushViewController:vc animated:YES];
+    }];
+    
     [self.camera setOnDeviceChange:^(SKCamera *camera, AVCaptureDevice * device) {
         
         if([camera isFlashAvailable]) {
+            
             weakself.topControlView.flashButton.hidden = NO;
             
             if(camera.flash == SKCameraFlashOff) {
+                
                weakself.topControlView.flashButton.selected = NO;
             }
             else {
@@ -128,12 +126,6 @@
                error.code == SKCameraErrorCodeMicrophonePermission) {
             }
         }
-    }];
-    
-    
-    [self.camera setHandleRecording:^(UIImage *image) {
-        //
-        weakself.imageView.image = image;
     }];
 }
 
@@ -180,7 +172,9 @@
 -(TopControlView *)topControlView {
 
     if (!_topControlView) {
+        
         _topControlView = [[TopControlView alloc] initWithFrame:CGRectZero];
+        
         kWeakObj(self)
         
         // 闪光灯
@@ -226,38 +220,28 @@
         _bottomControlView.recordCircleView.startRecordingVideo = ^(UIButton *button) {
             
             if (![weakself.camera isRecording]) {
+                
                 NSLog(@"start record");
                 
-                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl() cropFrame:CGRectMake(0, kscaleDeviceWidth(240), 720, 720) didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
-                    
-                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
-                    [weakself.navigationController pushViewController:vc animated:YES];
-                }];
+                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
+                                                         cropFrame:CGRectMake(0, kscaleDeviceWidth(240), weakself.view.width, weakself.view.width)] ;
+                
+                /*
+                 * if record preview rect use
+                 
+                 [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
+                                                          cropFrame:CGRectZero] ;
+                 */
                 
                 [weakself.camera sk_startRecording];
 
-
-                
-                /*
-                [weakself.camera startRecordingWithOutputUrl:OutputUrl() didRecord:^(SKCamera *camera, NSURL *outputFileUrl, NSError *error) {
-                    NSLog(@"outputFileUrl = %@",outputFileUrl);
-                    VideoPlayViewController *vc = [[VideoPlayViewController alloc] initWithVideoUrl:outputFileUrl];
-                    [weakself.navigationController pushViewController:vc animated:YES];
-                }];
-                 */
             }
         };
         
         _bottomControlView.recordCircleView.stopRecordingVideo = ^(UIButton *button) {
             
             [weakself.camera sk_stopRecording];
-            
-//            if ([weakself.camera isRecording]) {
-//                NSLog(@"stop record");
-////                [weakself.camera stopRecording];
-//                [weakself.camera stopRectRecording];
-//
-//            }
+
         };
     }
     return _bottomControlView;
