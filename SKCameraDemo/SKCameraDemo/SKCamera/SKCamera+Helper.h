@@ -53,7 +53,21 @@
 
 - (UIImage *)cropImage:(UIImage *)image usingPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
 
+@end
 
-void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize finalSize, CMSampleBufferRef *sampleBuffer);
 
+/**
+ 对焦动画的layer
+ */
+@interface SKFocusLayer : CALayer <CAAnimationDelegate>
+{
+    BOOL _isFocusAnimating;
+}
+
+@property (nonatomic , strong) CALayer *bigCircleLayer;
+@property (nonatomic , strong) CALayer *smallCircleLayer;
+@property (nonatomic , strong) CAAnimation  *scaleAnimation;// 对焦动画
+@property (nonatomic , strong) CAAnimation  *opacityAnimation;// 对焦动画
+
+- (void)showFocusAnimation ;
 @end

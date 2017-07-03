@@ -9,42 +9,6 @@
 
 @implementation SKCamera (Helper)
 
-void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize finalSize, CMSampleBufferRef *sampleBuffer)
-{
-    // CVPixelBufferCreateWithPlanarBytes for YUV input
-    
-    CGSize originalSize = CGSizeMake(CVPixelBufferGetWidth(cameraFrame), CVPixelBufferGetHeight(cameraFrame));
-    
-    CVPixelBufferLockBaseAddress(cameraFrame, 0);
-    GLubyte *sourceImageBytes =  CVPixelBufferGetBaseAddress(cameraFrame);
-    CGDataProviderRef dataProvider = CGDataProviderCreateWithData(NULL, sourceImageBytes, CVPixelBufferGetBytesPerRow(cameraFrame) * originalSize.height, NULL);
-    CGColorSpaceRef genericRGBColorspace = CGColorSpaceCreateDeviceRGB();
-    CGImageRef cgImageFromBytes = CGImageCreate((int)originalSize.width, (int)originalSize.height, 8, 32, CVPixelBufferGetBytesPerRow(cameraFrame), genericRGBColorspace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst, dataProvider, NULL, NO, kCGRenderingIntentDefault);
-    
-    GLubyte *imageData = (GLubyte *) calloc(1, (int)finalSize.width * (int)finalSize.height * 4);
-    
-    CGContextRef imageContext = CGBitmapContextCreate(imageData, (int)finalSize.width, (int)finalSize.height, 8, (int)finalSize.width * 4, genericRGBColorspace,  kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-    CGContextDrawImage(imageContext, CGRectMake(0.0, 0.0, finalSize.width, finalSize.height), cgImageFromBytes);
-    CGImageRelease(cgImageFromBytes);
-    CGContextRelease(imageContext);
-    CGColorSpaceRelease(genericRGBColorspace);
-    CGDataProviderRelease(dataProvider);
-    
-    CVPixelBufferRef pixel_buffer = NULL;
-    //    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, finalSize.width, finalSize.height, kCVPixelFormatType_32BGRA, imageData, finalSize.width * 4, stillImageDataReleaseCallback, NULL, NULL, &pixel_buffer);
-    CVPixelBufferCreateWithBytes(kCFAllocatorDefault, finalSize.width, finalSize.height, kCVPixelFormatType_32BGRA, imageData, finalSize.width * 4, nil, NULL, NULL, &pixel_buffer);
-    
-    CMVideoFormatDescriptionRef videoInfo = NULL;
-    CMVideoFormatDescriptionCreateForImageBuffer(NULL, pixel_buffer, &videoInfo);
-    
-    CMTime frameTime = CMTimeMake(1, 30);
-    CMSampleTimingInfo timing = {frameTime, frameTime, kCMTimeInvalid};
-    
-    CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault, pixel_buffer, YES, NULL, NULL, videoInfo, &timing, sampleBuffer);
-    CFRelease(videoInfo);
-    CVPixelBufferRelease(pixel_buffer);
-}
-
 + (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image{
     
     NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -123,9 +87,9 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
     CGColorSpaceRelease(rgbColorSpace);
     CGContextRelease(context);
     
-    CVPixelBufferUnlockBaseAddress(pxbuffer, 0); 
+    CVPixelBufferUnlockBaseAddress(pxbuffer, 0);
     
-    return pxbuffer; 
+    return pxbuffer;
 }
 
 //转换图片
@@ -150,7 +114,7 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
     // 用抽样缓存的数据创建一个位图格式的图形上下文（graphics context）对象
     CGContextRef context = CGBitmapContextCreate(baseAddress, width, height, 8,
                                                  bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-
+    
     // 根据这个位图context中的像素数据创建一个Quartz image对象
     CGImageRef quartzImage = CGBitmapContextCreateImage(context);
     // 解锁pixel buffer
@@ -165,8 +129,8 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
     
     // 释放Quartz image对象
     CGImageRelease(quartzImage);
-
-
+    
+    
     return (image);
 }
 
@@ -557,3 +521,104 @@ void GPUImageCreateResizedSampleBuffer(CVPixelBufferRef cameraFrame, CGSize fina
 
 
 @end
+
+
+@implementation SKFocusLayer
+
+- (void)layoutSublayers {
+    
+    [super layoutSublayers];
+    
+    self.bigCircleLayer.bounds = CGRectMake(0.0f, 0.0f, 60, 60);
+    self.smallCircleLayer.bounds = CGRectMake(0.0f, 0.0f, 46, 46);
+}
+
+- (instancetype)init {
+    
+    if (self = [super init]) {
+        
+        CALayer *bigCircleLayer = [[CALayer alloc] init];
+        bigCircleLayer.cornerRadius = 30;
+        bigCircleLayer.borderColor = [UIColor whiteColor].CGColor;
+        bigCircleLayer.bounds = CGRectMake(0.0f, 0.0f, 60, 60);
+        bigCircleLayer.borderWidth = 1.0f;
+        bigCircleLayer.opacity = 1.0f;
+        bigCircleLayer.shadowOffset = CGSizeMake(0, 0);
+        bigCircleLayer.shadowRadius = 1.0;
+        bigCircleLayer.shadowColor = [UIColor whiteColor].CGColor;
+        bigCircleLayer.shadowOpacity = 0.8;
+        self.bigCircleLayer = bigCircleLayer;
+        [self addSublayer:bigCircleLayer];
+        
+        CALayer *smallCircleLayer = [[CALayer alloc] init];
+        smallCircleLayer.cornerRadius = 23;
+        smallCircleLayer.borderColor = [UIColor whiteColor].CGColor;
+        smallCircleLayer.bounds = CGRectMake(0.0f, 0.0f, 46, 46);
+        smallCircleLayer.borderWidth = 2.0f;
+        smallCircleLayer.opacity = 1.0f;
+        smallCircleLayer.shadowOffset = CGSizeMake(0, 0);
+        smallCircleLayer.shadowRadius = 2.0;
+        smallCircleLayer.shadowColor = [UIColor whiteColor].CGColor;
+        smallCircleLayer.shadowOpacity = 0.8;
+        smallCircleLayer.position = CGPointMake(0, 0);
+        self.smallCircleLayer = smallCircleLayer;
+        [self addSublayer: smallCircleLayer];
+        
+        [self config];
+    }
+    return self;
+}
+
+-(void)config {
+    
+    CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    opacityAnimation.duration = 0.3;
+    opacityAnimation.autoreverses = NO;
+    opacityAnimation.repeatCount = 0.0;
+    opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+    opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
+    self.opacityAnimation = opacityAnimation;
+    
+    CAKeyframeAnimation *scaleAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    scaleAnimation.duration = 1.0;
+    scaleAnimation.autoreverses = NO;
+    scaleAnimation.repeatCount = HUGE_VALF;
+    scaleAnimation.fillMode = kCAFillModeBoth;
+    scaleAnimation.calculationMode = kCAAnimationCubic;
+    scaleAnimation.values = @[@(1.0), @(1.4), @(1.0), @(1.3), @(1.0)];
+    
+    CAAnimationGroup *group = [CAAnimationGroup animation];
+    group.delegate = self;
+    group.animations = @[scaleAnimation];
+    group.duration = 1.0;
+    self.scaleAnimation = group;
+    
+}
+
+- (void)showFocusAnimation {
+    
+    if (_isFocusAnimating) {
+        return;
+    }
+    [self.bigCircleLayer removeAllAnimations];
+    self.bigCircleLayer.opacity = 1.0;
+    self.opacity = 1.0;
+    [self.bigCircleLayer addAnimation:self.scaleAnimation forKey:@"scaleAnimation"];
+}
+
+- (void)animationDidStart:(CAAnimation *)anim {
+    _isFocusAnimating = YES;
+}
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+    _isFocusAnimating = NO;
+    
+    [CATransaction begin];
+    [CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
+    [CATransaction setValue:[NSNumber numberWithFloat:0.2]
+                     forKey:kCATransactionAnimationDuration];
+    self.opacity = 0.0;
+    [CATransaction commit];
+}
+@end
+

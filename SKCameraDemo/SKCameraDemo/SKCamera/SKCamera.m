@@ -12,7 +12,7 @@
 #import "SKCamera+Helper.h"
 
 @interface SKCamera () < UIGestureRecognizerDelegate,
-AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate >
+AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate ,CAAnimationDelegate>
 {
     UIView *_previewView;
     int _beginSessionConfigurationCount;
@@ -67,8 +67,7 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
 
 @property (strong, nonatomic) UITapGestureRecognizer     *tapGesture; // 点击对焦手势
 @property (strong, nonatomic) UIPinchGestureRecognizer   *pinchGesture; // 捏合缩放
-@property (strong, nonatomic) CALayer                    *focusBoxLayer; // 对焦动画layer
-@property (strong, nonatomic) CAAnimation                *focusBoxAnimation;// 对焦动画
+@property (strong, nonatomic) SKFocusLayer               *focusBoxLayer; // 对焦动画layer
 
 @property (assign, nonatomic) CGFloat                    beginGestureScale; // 初始放大系数
 @property (assign, nonatomic) CGFloat                    effectiveScale; // 最终放大系数
@@ -93,7 +92,6 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
 
 
 @end
-
 
 @implementation SKCamera
 
@@ -1141,10 +1139,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     if(cameraFlash == SKCameraFlashOn) {
         flashMode = AVCaptureFlashModeOn;
+        [self enableTorch:YES];
     } else if(cameraFlash == SKCameraFlashAuto) {
         flashMode = AVCaptureFlashModeAuto;
     } else {
         flashMode = AVCaptureFlashModeOff;
+        [self enableTorch:NO];
     }
     
     if([self.videoCaptureDevice isFlashModeSupported:flashMode]) {
@@ -1236,10 +1236,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return self.position;
     }
     
-    if(self.position == SKCameraPosition_Back) {
-        self.cameraPosition = SKCameraPosition_Front;
+    __weak typeof(self) weakself = self;
+    
+    if(weakself.position == SKCameraPosition_Back) {
+        weakself.cameraPosition = SKCameraPosition_Front;
     } else {
-        self.cameraPosition = SKCameraPosition_Back;
+        weakself.cameraPosition = SKCameraPosition_Back;
     }
     
     return self.position;
@@ -1259,13 +1261,9 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return;
     }
     
-    [self.session beginConfiguration];
+    [self stopRunnig];
     
-    // 1. remove existing input
-    [self.session removeInput:self.audioDeviceInput]; // fix AURemoteIO Thread
-    [self.session removeInput:self.videoDeviceInput];
-    
-    // 2. get new input
+    // 1. get new input
     AVCaptureDevice *device = nil;
     if(self.videoDeviceInput.device.position == AVCaptureDevicePositionBack) {
         device = [self cameraWithPosition:AVCaptureDevicePositionFront];
@@ -1276,6 +1274,11 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if(!device) {
         return;
     }
+    
+    [self.session beginConfiguration];
+    // 2. remove existing input
+    [self.session removeInput:self.audioDeviceInput]; // fix AURemoteIO Thread
+    [self.session removeInput:self.videoDeviceInput];
     
     // 3.add input to session
     NSError *error = nil;
@@ -1289,6 +1292,21 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     _position = cameraPosition;
     
     if ([self.session canAddInput:videoInput]) {
+        
+        //给摄像头的切换添加翻转动画
+        CATransition *animation = [CATransition animation];
+        animation.duration = .4f;
+        animation.delegate = self;
+        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        animation.type = @"oglFlip";
+        
+        if(cameraPosition == SKCameraPosition_Front ) {
+            animation.subtype = kCATransitionFromLeft;
+        } else {
+            animation.subtype = kCATransitionFromRight;
+        }
+        [self.captureVideoPreviewLayer addAnimation:animation forKey:@"togglePositionAnimation"];
+        
         [self.session addInput:videoInput];
     }
     
@@ -1296,10 +1314,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     self.videoCaptureDevice = device;
     self.videoDeviceInput = videoInput;
-    
-    [self setMirror:_mirror];
 }
 
+- (void)animationDidStart:(CAAnimation *)anim {
+    [self setMirror:_mirror];
+    [self startRunnig];
+}
 
 - (AVCaptureConnection*)videoConnection {
     for (AVCaptureConnection * connection in self.videoDataOutput.connections) {
@@ -1336,33 +1356,23 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                                                                    previewLayer:self.captureVideoPreviewLayer
                                                                           ports:self.videoDeviceInput.ports];
     [self focusAtPoint:pointOfInterest];
-    [self showFocusBox:touchedPoint];
+    
+    [CATransaction begin];
+    [CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
+    self.focusBoxLayer.position = touchedPoint;
+    [CATransaction commit];
+    
+    [self.focusBoxLayer showFocusAnimation];
+    
 }
 
 - (void)addDefaultFocusBox
 {
-    CALayer *focusBox = [[CALayer alloc] init];
-    focusBox.cornerRadius = 5.0f;
-    focusBox.bounds = CGRectMake(0.0f, 0.0f, 70, 60);
-    focusBox.borderWidth = 3.0f;
-    focusBox.borderColor = [[UIColor yellowColor] CGColor];
+    SKFocusLayer *focusBox = [[SKFocusLayer alloc] init];
+    focusBox.bounds = CGRectMake(0.0f, 0.0f, 50, 50);
     focusBox.opacity = 0.0f;
-    [self.previewView.layer addSublayer:focusBox]; // new add
-    
-    CABasicAnimation *focusBoxAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    focusBoxAnimation.duration = 0.75;
-    focusBoxAnimation.autoreverses = NO;
-    focusBoxAnimation.repeatCount = 0.0;
-    focusBoxAnimation.fromValue = [NSNumber numberWithFloat:1.0];
-    focusBoxAnimation.toValue = [NSNumber numberWithFloat:0.0];
-    
-    [self alterFocusBox:focusBox animation:focusBoxAnimation];
-}
-
-- (void)alterFocusBox:(CALayer *)layer animation:(CAAnimation *)animation
-{
-    self.focusBoxLayer = layer;
-    self.focusBoxAnimation = animation;
+    self.focusBoxLayer = focusBox;
+    [self.previewView.layer addSublayer:focusBox];
 }
 
 - (void)focusAtPoint:(CGPoint)point
@@ -1371,34 +1381,22 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         NSError *error;
         if ([device lockForConfiguration:&error]) {
+            // 对焦模式和对焦点
             device.focusPointOfInterest = point;
             device.focusMode = AVCaptureFocusModeAutoFocus;
+            
+            //曝光模式和曝光点
+            if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
+                [device setExposurePointOfInterest:point];
+                [device setExposureMode:AVCaptureExposureModeAutoExpose];
+            }
+            
             [device unlockForConfiguration];
         } else {
             [self passError:error];
         }
     }
 }
-
-- (void)showFocusBox:(CGPoint)point
-{
-    if(self.focusBoxLayer) {
-        // clear animations
-        [self.focusBoxLayer removeAllAnimations];
-        
-        // move layer to the touch point
-        [CATransaction begin];
-        [CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
-        self.focusBoxLayer.position = point;
-        [CATransaction commit];
-    }
-    
-    if(self.focusBoxAnimation) {
-        // run the animation
-        [self.focusBoxLayer addAnimation:self.focusBoxAnimation forKey:@"animateOpacity"];
-    }
-}
-
 
 #pragma mark - setter / getter
 
@@ -1602,3 +1600,4 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 }
 
 @end
+

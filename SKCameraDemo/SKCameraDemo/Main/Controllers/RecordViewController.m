@@ -181,6 +181,7 @@
         _topControlView.flashButtonPressed = ^(UIButton *button) {
         
             if(weakself.camera.flash == SKCameraFlashOff) {
+                
                 BOOL done = [weakself.camera updateFlashMode:SKCameraFlashOn];
                 if(done) {
                     button.selected = YES;
