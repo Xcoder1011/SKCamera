@@ -355,6 +355,18 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             self.videoCaptureDevice = [self cameraWithPosition:devicePosition];
         }
         
+        AVCaptureDevice *device = self.videoCaptureDevice;
+        if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+            NSError *error;
+            if ([device lockForConfiguration:&error]) {
+                //曝光模式和曝光点
+                if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
+                    [device setExposureMode:AVCaptureExposureModeAutoExpose];
+                }
+                [device unlockForConfiguration];
+            }
+        }
+        
         NSError *error = nil;
         _videoDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:_videoCaptureDevice error:&error];
         
@@ -478,9 +490,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                 _metadataOutputAdded = YES;
             }
         }
-        
-        //  default whiteBalanceMode
-        self.whiteBalanceMode = AVCaptureWhiteBalanceModeContinuousAutoWhiteBalance;
     }
     
     // re-enable it
@@ -1261,8 +1270,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return;
     }
     
-    [self stopRunnig];
-    
     // 1. get new input
     AVCaptureDevice *device = nil;
     if(self.videoDeviceInput.device.position == AVCaptureDevicePositionBack) {
@@ -1319,6 +1326,19 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 - (void)animationDidStart:(CAAnimation *)anim {
     [self setMirror:_mirror];
     [self startRunnig];
+    
+    AVCaptureDevice *device = self.videoCaptureDevice;
+    if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        NSError *error;
+        if ([device lockForConfiguration:&error]) {
+            //曝光模式
+            if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
+                [device setExposureMode:AVCaptureExposureModeAutoExpose];
+            }
+            [device unlockForConfiguration];
+        }
+    }
+    
 }
 
 - (AVCaptureConnection*)videoConnection {
