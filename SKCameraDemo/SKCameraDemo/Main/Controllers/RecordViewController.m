@@ -118,6 +118,15 @@
         }
     }];
     
+    [self.camera setOnRecordingTimeBlock:^(SKCamera *camera , CGFloat currentRecordTime , CGFloat maxRecordTime) {
+        
+        [weakself.topControlView.timeLabel setHidden:NO];
+        NSLog(@"_currentRecordTime = %f",currentRecordTime);
+        NSString *time = [NSString stringWithFormat:@"%02li:%02li:%02li",lround(floor(currentRecordTime / 3600.f)) % 100, lround(floor(currentRecordTime/60.f)),lround(floor(currentRecordTime/1.f))%60];
+        
+        [weakself.topControlView.timeLabel setText:time];
+    }];
+    
     [self.camera setOnError:^(SKCamera *camera, NSError *error) {
         NSLog(@"Camera error: %@", error);
         
@@ -225,13 +234,15 @@
                 NSLog(@"start record");
                 
                 [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
-                                                         cropFrame:CGRectMake(0, kscaleDeviceWidth(240), weakself.view.width, weakself.view.width)] ;
+                                                         cropFrame:CGRectMake(0, kscaleDeviceWidth(240), weakself.view.width, weakself.view.width)
+                                                     maxRecordTime:15.f] ;
                 
                 /*
                  * if record preview rect use
                  
                  [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
-                                                          cropFrame:CGRectZero] ;
+                                                          cropFrame:CGRectZero
+                                                      maxRecordTime:15.f] ;
                  */
                 
                 [weakself.camera sk_startRecording];

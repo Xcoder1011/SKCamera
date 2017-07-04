@@ -12,6 +12,8 @@
 
 // 闪光灯
 @property (strong, nonatomic) UIButton *flashButton;
+// 时间显示
+@property (strong, nonatomic) UILabel *timeLabel;
 
 @property (nonatomic , copy) void (^flashButtonPressed)( UIButton * btn);
 

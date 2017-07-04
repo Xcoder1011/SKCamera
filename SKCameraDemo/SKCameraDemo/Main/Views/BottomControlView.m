@@ -89,6 +89,7 @@
 
     if (!_recordCircleView) {
         _recordCircleView = [[CircleProgressView alloc] initWithFrame:CGRectMake(0, 0, kscaleDeviceWidth(360), kscaleDeviceWidth(360))];
+        _recordCircleView.totalTime = 15;
     }
     return _recordCircleView;
 }

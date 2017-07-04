@@ -63,7 +63,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 @property (nonatomic, weak) id<AVCaptureMetadataOutputObjectsDelegate> faceDetectionDelegate;
 @property (nonatomic, weak) id<AVCaptureAudioDataOutputSampleBufferDelegate> audioDelegate;
 
-
 @property (nonatomic, strong, readonly) AVCaptureConnection* videoConnection;
 @property (nonatomic, strong, readonly) AVCaptureConnection* audioConnection;
 
@@ -83,23 +82,24 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  */
 @property (nonatomic, copy) void (^onStartRecording)(SKCamera *camera);
 
-
 /**
- * 录视频回调
+ * 正在录视频回调
  */
-@property (nonatomic, copy) void (^handleRecording)(UIImage *image);
+@property (nonatomic, copy) void (^onRecordingTimeBlock)(SKCamera *camera , CGFloat currentRecordTime , CGFloat maxRecordTime);
 
 /**
  * 录视频完成回调
  */
 @property (nonatomic, copy) void (^didRecordCompletionBlock)(SKCamera *camera, NSURL *outputFileUrl, NSError *error);
 
-
 /**
  * 视频质量  eg. AVCaptureSessionPresetHigh
  */
 @property (nonatomic, copy) NSString *cameraQuality;
 
+/**
+ * 图片大小
+ */
 @property (nonatomic, readonly) CGSize imageSize;
 
 /**
@@ -112,6 +112,9 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  */
 @property (nonatomic) SKCameraMirror mirror;
 
+/**
+ * 相机前后置
+ */
 @property (nonatomic) SKCameraPosition position;
 
 /**
@@ -121,12 +124,15 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 
 /**
  * 以下输出都是打开的,如果不需要再单独关闭
- * Default is Enabled
+ * default is enabled
  */
 @property (nonatomic, getter=isVideoOutputEnabled) BOOL videoOutputEnabled; // videoOutput
 @property (nonatomic, getter=isAudioOutputEnabled) BOOL audioOutputEnabled; // audioOutput
 @property (nonatomic, getter=isPhotoOutputEnabled) BOOL photoOutputEnabled; // photoOutput
-@property (nonatomic, getter=isFaceDetectEnabled)  BOOL faceDetectEnabled; // face detect
+/**
+ * metadata default is unenabled
+ */
+@property (nonatomic, getter=isFaceDetectEnabled)  BOOL faceDetectEnabled;  // face detect
 
 /**
  *  是否需要录制视频文件
@@ -142,9 +148,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 @property (nonatomic, getter=isRecording , readonly)  BOOL recording; // 是否正在录制
 @property (nonatomic, getter=isPaused ,    readonly)  BOOL paused;  // 是否暂停
 @property (nonatomic, getter=isDiscont ,   readonly)  BOOL discont; // 是否中断
-
-//@property (nonatomic, assign) CGFloat maxScale;
-
 
 @property (nonatomic) BOOL fixOrientationAfterCapture;
 
@@ -164,7 +167,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
 - (instancetype)initWithQuality:(NSString *)quality position:(SKCameraPosition)position videoEnabled:(BOOL)videoEnabled;
 
 - (instancetype)initWithVideoQuality:(NSString *)quality position:(SKCameraPosition)position captureDelegate:(id)delegate;
-
 
 /**
  * 在设置delegate 之后调用
@@ -187,21 +189,22 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * @param exactSeenImage   YES: 剪切到 preview 大小一样
  * @param animationBlock   拍照的时候加入自己的动画效果
  */
--(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture exactSeenImage:(BOOL)exactSeenImage animationBlock:(void (^)(AVCaptureVideoPreviewLayer *))animationBlock;
+-(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture
+exactSeenImage:(BOOL)exactSeenImage
+animationBlock:(void (^)(AVCaptureVideoPreviewLayer *))animationBlock;
 
 -(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture exactSeenImage:(BOOL)exactSeenImage;
 
 -(void)capture:(void (^)(SKCamera *camera, UIImage *image, NSDictionary *metadata, NSError *error))onCapture;
 
-
 /*
  * 设置录制视频 相关信息
  *
  * @param url   视频输出的url
- * @param cropFrame   录制视频的宽高， 如果录制的是preview的区域,就传 CGRectZero ; 自定义区域的frame
+ * @param cropFrame   需要录制区域的frame，如果录制的是preview的区域, 就传 CGRectZero
+ * @param maxRecordTime   最大录制时间 , 单位:秒  例如60.f
  */
-- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame;
-
+- (void)setupRecordingConfigWithOutputUrl:(NSURL *)url  cropFrame:(CGRect)cropFrame maxRecordTime:(CGFloat)maxRecordTime;
 
 /**
  * 开启录制功能
@@ -213,18 +216,15 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  */
 - (void)sk_shutRecording ;
 
-
 /**
  * 开始录制视频  (可以设置 录制的 区域)
  */
 - (void)sk_startRecording;
 
-
 /**
  * 暂停录制视频
  */
 - (void)sk_pauseRecording;
-
 
 /**
  * 继续录制视频
@@ -235,7 +235,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * 停止录制视频
  */
 - (void)sk_stopRecording;
-
 
 /**
  * 切换摄像头
@@ -262,7 +261,9 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  */
 - (void)alterFocusBox:(CALayer *)layer animation:(CAAnimation *)animation;
 
-// 销毁相机
+/**
+ * 销毁相机画
+ */
 - (void)destroyCamera;
 
 
@@ -276,7 +277,6 @@ typedef NS_ENUM(NSInteger, SKCameraErrorCode) {
  * 请求麦克风权限
  */
 + (void)requestMicrophonePermission:(void (^)(BOOL granted))completionBlock;
-
 
 /**
  * 检查 前置摄像头是否可用

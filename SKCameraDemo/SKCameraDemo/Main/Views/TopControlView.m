@@ -42,6 +42,16 @@
         make.top.equalTo(self.mas_top).offset(20);
         make.left.equalTo(self.mas_left).offset(20);
     }];
+    
+    [self addSubview:self.timeLabel];
+    self.timeLabel.hidden = YES;
+    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.mas_centerX);
+        make.centerY.equalTo(self.mas_centerY);
+        make.width.mas_equalTo(120);
+        make.height.mas_equalTo(30);
+    }];
+
 }
 
 
@@ -52,6 +62,16 @@
     }
 }
 
+- (UILabel *)timeLabel {
+
+    if (!_timeLabel) {
+        _timeLabel = [[UILabel alloc] init];
+        _timeLabel.font = [UIFont systemFontOfSize:18];
+        _timeLabel.textColor  = [UIColor whiteColor];
+        _timeLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _timeLabel;
+}
 
 -(UIButton *)flashButton {
     if (!_flashButton) {
