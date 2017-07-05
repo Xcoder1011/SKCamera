@@ -22,10 +22,7 @@
 +(UIImage *) imageFromSampleBuffer3:(CMSampleBufferRef) sampleBuffer;
 
 
-
-+ (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image ;
-
-+ (CVPixelBufferRef)pixelBufferFromCGImage2:(CGImageRef)image;
++ (CVPixelBufferRef)pixelBufferFromCGImage:(CGImageRef)image;
 
 /**
  视频剪切
