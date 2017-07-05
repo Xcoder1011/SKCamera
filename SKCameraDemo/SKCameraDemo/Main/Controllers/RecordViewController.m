@@ -121,9 +121,7 @@
     [self.camera setOnRecordingTimeBlock:^(SKCamera *camera , CGFloat currentRecordTime , CGFloat maxRecordTime) {
         
         [weakself.topControlView.timeLabel setHidden:NO];
-        NSLog(@"_currentRecordTime = %f",currentRecordTime);
-        NSString *time = [NSString stringWithFormat:@"%02li:%02li:%02li",lround(floor(currentRecordTime / 3600.f)) % 100, lround(floor(currentRecordTime/60.f)),lround(floor(currentRecordTime/1.f))%60];
-        
+        NSString *time = [NSString stringWithFormat:@"%02li:%02li:%02li",lround(floor(currentRecordTime / 3600.f)) % 100, lround(floor(currentRecordTime/60.f))%60,lround(floor(currentRecordTime/1.f))%60];
         [weakself.topControlView.timeLabel setText:time];
     }];
     
@@ -142,6 +140,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.topControlView.flashButton.hidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
