@@ -118,6 +118,8 @@
         make.right.equalTo(self.view.mas_right).offset( - kscaleDeviceWidth(180));
         make.centerY.equalTo(doneBtn.mas_centerY);
     }];
+    
+    doneBtn.hidden = YES;
 }
 
 -(void)setTopControlView {

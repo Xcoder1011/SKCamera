@@ -7,6 +7,7 @@
 //
 
 #import "CircleProgressView.h"
+#import "CALayer+ControlAnimation.h"
 
 #define PROGRESSW self.frame.size.width
 #define PROGRESSH self.frame.size.height
@@ -19,6 +20,10 @@
 #define SKProgressLineColor       [UIColor whiteColor]
 
 @interface CircleProgressView () <CAAnimationDelegate>
+{
+    BOOL _isAnimating;
+    BOOL _isResumeAnimation;  // 是否是继续录制事件
+}
 
 @property (nonatomic, strong) CALayer *middleLayer;
 @property (nonatomic, strong) CALayer *bgLayer;
@@ -68,7 +73,30 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     self.totalTime = SKTotalTime;
     self.userInteractionEnabled = YES;
     [self.layer addSublayer:self.progressLayer];
+    _isAnimating = NO;
+    _isResumeAnimation = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+}
 
+
+
+#pragma mark - notification
+- (void)applicationEnterBackground
+{
+    if (_isAnimating) {
+        [self.progressLayer pauseLayerCoreAnimation];
+        _isAnimating = NO;
+    }
+}
+
+- (void)applicationDidBecomeActive
+{
+    if (!_isAnimating) {
+        [self.progressLayer resumeLayerCoreAnimation];
+        _isAnimating = YES;
+    }
 }
 
 - (void)setSubLayers {
@@ -84,50 +112,82 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
     }];
 }
 
+- (void)reset  {
+
+    self.tapButton.selected = NO;
+    _isResumeAnimation = NO;
+    
+    [self stopRunningCircleProgress];
+   
+}
 
 - (void)tapButtonPressed:(UIButton *)btn {
     
     btn.selected = !btn.selected;
     
     if (btn.selected) {
+       
+        if (_isResumeAnimation) { // 继续录制
+            [self applicationDidBecomeActive];
+            
+            if (self.clickRecordingBlock) {
+                self.clickRecordingBlock(btn);
+            }
+            return;
+        }
         
+        // 第一次录制
         [self.middleLayer addAnimation:ScaleAnimation(1.0, 12.0/15, ANIMATION_DURATION) forKey:@"middlelayer"];
         [self.bgLayer addAnimation:ScaleAnimation(1.0, 36.0/24, ANIMATION_DURATION) forKey:@"bgLayer"];
-        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-            if (self.startRecordingVideo) {
-                self.startRecordingVideo(btn);
+            
+            if (self.clickRecordingBlock) {
+                self.clickRecordingBlock(btn);
                 [self startRunningCircleProgress];
+                _isResumeAnimation = YES;
             }
         });
-       
+        
     } else {
-        if (self.stopRecordingVideo) {
-            self.stopRecordingVideo(btn);
-            [self stopRunningCircleProgress];
+        
+        [self applicationEnterBackground];
+        
+        if (self.clickRecordingBlock) {
+            self.clickRecordingBlock(btn);
+            
         }
     }
-    
 }
 
 
 - (void)startRunningCircleProgress {
-    [self.progressLayer addAnimation:self.animationGroup forKey:@"group"];
+    [self.progressLayer addAnimation:self.strokeAnimationEnd forKey:@"group"];
+    _isAnimating = YES;
 }
 
 
 - (void)stopRunningCircleProgress{
     
-    if (self.animationGroup) {
+    if (self.strokeAnimationEnd) {
+        _isAnimating = NO;
         [self.progressLayer removeAllAnimations];
         [self.middleLayer removeAllAnimations];
         [self.bgLayer removeAllAnimations];
     }
 }
 
-
+/**
+ *  动画停止
+ *
+ *  @param anim CAAnimation对象
+ *  @param flag 是否是正常的移除
+ */
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
+
+    if (!flag) { // 不正常
+        return;
+    }
+    
     [self stopRunningCircleProgress];
     if (self.stopRecordingVideo) {
         self.stopRecordingVideo(self.tapButton);
@@ -153,12 +213,13 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
 {
     if (!_strokeAnimationEnd) {
         _strokeAnimationEnd = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-        _strokeAnimationEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+        _strokeAnimationEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
         _strokeAnimationEnd.duration = self.totalTime;
         _strokeAnimationEnd.fromValue = @0;
         _strokeAnimationEnd.toValue = @1;
         _strokeAnimationEnd.speed = 1.0;
         _strokeAnimationEnd.fillMode = kCAFillModeForwards;
+        _strokeAnimationEnd.delegate = self;
         _strokeAnimationEnd.removedOnCompletion = NO;
     }
     return _strokeAnimationEnd;
@@ -240,10 +301,12 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
 
 
 -(void)dealloc{
-    self.animationGroup.delegate = nil;
+    self.strokeAnimationEnd.delegate = nil;
+    self.strokeAnimationEnd = nil;
     self.progressLayer = nil;
     self.bgLayer = nil;
     self.middleLayer = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 

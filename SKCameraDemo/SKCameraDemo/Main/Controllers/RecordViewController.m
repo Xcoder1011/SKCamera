@@ -151,12 +151,16 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     [self.camera sk_shutRecording];
+    [self.bottomControlView.recordCircleView reset];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
   
     [self.camera sk_enableRecording];
+    [self.bottomControlView.recordCircleView reset];
+
 }
 
 
@@ -222,32 +226,42 @@
             [weakself.camera togglePosition];
         };
         
-        _bottomControlView.slectPhotoButtonPressed = ^(UIButton *button) {
-            NSLog(@"open photos");
+        _bottomControlView.doneButtonPressed = ^(UIButton *button) {
+            
+            [weakself.camera sk_stopRecording];
+
         };
         
-        _bottomControlView.recordCircleView.startRecordingVideo = ^(UIButton *button) {
+        _bottomControlView.recordCircleView.clickRecordingBlock = ^(UIButton * button) {
             
-            if (![weakself.camera isRecording]) {
+            if (button.selected) {
                 
-                NSLog(@"start record");
+                if ([weakself.camera isRecording]) {
+                    
+                    [weakself.camera sk_resumeRecording];
+                } else {
+                    
+                    /*
+                     * if record preview rect use
+                     
+                    [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
+                                                             cropFrame:CGRectZero
+                                                         maxRecordTime:15.f] ;
+                     */
+                    
+                    [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
+                                                             cropFrame:CGRectMake(0, kscaleDeviceWidth(240), weakself.view.width, weakself.view.width)
+                                                         maxRecordTime:15.f] ;
+                    
+                    [weakself.camera sk_startRecording];
+                }
                 
-                [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
-                                                         cropFrame:CGRectMake(0, kscaleDeviceWidth(240), weakself.view.width, weakself.view.width)
-                                                     maxRecordTime:15.f] ;
-                
-                /*
-                 * if record preview rect use
-                 
-                 [weakself.camera setupRecordingConfigWithOutputUrl:OutputUrl()
-                                                          cropFrame:CGRectZero
-                                                      maxRecordTime:15.f] ;
-                 */
-                
-                [weakself.camera sk_startRecording];
-
+            } else {
+            
+                [weakself.camera sk_pauseRecording];
             }
         };
+        
         
         _bottomControlView.recordCircleView.stopRecordingVideo = ^(UIButton *button) {
             

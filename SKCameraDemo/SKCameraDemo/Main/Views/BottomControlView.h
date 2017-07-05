@@ -15,6 +15,6 @@
 
 @property (nonatomic , copy) void (^switchButtonPressed)( UIButton * btn);
 
-@property (nonatomic , copy) void (^slectPhotoButtonPressed)( UIButton * btn);
+@property (nonatomic , copy) void (^doneButtonPressed)( UIButton * btn);
 
 @end

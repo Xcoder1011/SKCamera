@@ -18,14 +18,14 @@
 
 @property (assign, nonatomic) NSInteger totalTime;
 
-
 @property (assign, nonatomic) CGFloat startAngle;
 
 @property (assign, nonatomic) CGFloat endAngle;
 
-
-@property (nonatomic , copy) void (^startRecordingVideo)( UIButton * btn);
+@property (nonatomic , copy) void (^clickRecordingBlock)( UIButton * btn);
 
 @property (nonatomic , copy) void (^stopRecordingVideo)( UIButton * btn);
+
+- (void)reset ;
 
 @end

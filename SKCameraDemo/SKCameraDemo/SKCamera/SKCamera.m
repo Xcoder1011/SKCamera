@@ -760,6 +760,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if ([self.session isRunning]) {
         [self stopRunnig];
     }
+ 
 }
 
 
@@ -772,9 +773,10 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         if (!self.isRecording) {
             self.paused = NO;
             self.discont = NO;
-            self.recording = YES;
             _timeOffset= CMTimeMake(0, 0);
+            self.recording = YES;
             if(self.onStartRecording) self.onStartRecording(self);
+            NSLog(@"start record");
         }
     }
 }
@@ -789,6 +791,8 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         if (self.isRecording) {
             self.paused = YES;
             self.discont = YES;
+            NSLog(@"pause record");
+
         }
     }
 }
@@ -802,6 +806,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     @synchronized (self) {
         if (self.isPaused) {
             self.paused = NO;
+            NSLog(@"resume record");
         }
     }
 }
@@ -812,8 +817,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
  */
 - (void)sk_stopRecording {
     
-    [self sk_pauseRecording];
-    
     @synchronized (self) {
         if (self.isRecording) {
             self.recording = NO;
@@ -821,13 +824,15 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             dispatch_async(_sessionQueue, ^{
                 
                 if (self.videoWriter) {
+                    
                     [self.videoWriter finishWritingWithCompletionHandler:^{
+                        
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self enableTorch:NO];
                             self.recording = NO;
                             _startRecordTime = CMTimeMake(0, 0);
                             _currentRecordTime = 0;
-                            
+                            NSLog(@"stop record");
                             if(self.didRecordCompletionBlock) {
                                 self.didRecordCompletionBlock(self, self.videoWriter.outputURL, nil);
                                 
@@ -885,9 +890,9 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         
         if (self.discont) {
             
-            if (captureOutput == self.videoDataOutput) { // video
-                return;
-            }
+//            if (captureOutput == self.videoDataOutput) { // video
+//                return;
+//            }
             
             self.discont = NO;
             // 计算暂停的时间
@@ -920,7 +925,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         if (_timeOffset.value  > 0) {
             CFRelease(sampleBuffer);
             sampleBuffer = [self adjustTime:sampleBuffer by:_timeOffset];
-            
         }
         
         // 记录暂停上一次录制的时间
@@ -983,6 +987,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             
             if (self.videoWriter.status == AVAssetWriterStatusFailed ) {
                 NSLog(@"writer error %@", self.videoWriter.error.localizedDescription);
+                [self sk_stopRecording];
                 CFRelease(sampleBuffer);
                 return;
             }

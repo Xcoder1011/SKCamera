@@ -11,7 +11,7 @@
 
 @interface BottomControlView ()
 
-@property (strong, nonatomic) UIButton *slectPhotoButton;
+@property (strong, nonatomic) UIButton *doneButton;
 
 @property (strong, nonatomic) UIButton *switchButton;
 
@@ -43,26 +43,28 @@
     // 2. recordCircleView
     [self addSubview:self.recordCircleView];
     [self.recordCircleView mas_makeConstraints:^(MASConstraintMaker *make) {
+        
         make.width.height.mas_equalTo(kscaleDeviceWidth(360));
         make.bottom.equalTo(self.mas_bottom).offset(-20);
         make.centerX.equalTo(self.mas_centerX);
     }];
     
     // 3. slectPhotoButton
-    [self addSubview:self.slectPhotoButton];
-    [self.slectPhotoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.doneButton];
+    [self.doneButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.height.mas_equalTo(40);
-        make.left.equalTo(self.mas_left).offset(kscaleDeviceWidth(180));
+        make.right.equalTo(self.mas_right).offset( - kscaleDeviceWidth(180));
         make.centerY.equalTo(self.recordCircleView.mas_centerY);
     }];
     
+    
     if([SKCamera isFrontCameraAvailable] && [SKCamera isRearCameraAvailable]) {
-       
         // 3. switch button
         [self addSubview:self.switchButton];
         [self.switchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+           
             make.width.height.mas_equalTo(40);
-            make.right.equalTo(self.mas_right).offset( - kscaleDeviceWidth(180));
+            make.left.equalTo(self.mas_left).offset(kscaleDeviceWidth(180));
             make.centerY.equalTo(self.recordCircleView.mas_centerY);
         }];
     }
@@ -77,18 +79,12 @@
 }
 
 
-- (void)slectPhotoButtonPressed:(UIButton *)button
-{
-    if (self.slectPhotoButtonPressed) {
-        self.slectPhotoButtonPressed(button);
-    }
-}
-
 
 - (CircleProgressView *)recordCircleView {
 
     if (!_recordCircleView) {
         _recordCircleView = [[CircleProgressView alloc] initWithFrame:CGRectMake(0, 0, kscaleDeviceWidth(360), kscaleDeviceWidth(360))];
+        _recordCircleView.progressLineColor = [UIColor whiteColor];
         _recordCircleView.totalTime = 15;
     }
     return _recordCircleView;
@@ -98,29 +94,42 @@
 - (UIButton *)switchButton {
     
     if (!_switchButton) {
-        _switchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _switchButton.isNeedPrevent = YES;
-        _switchButton.frame = CGRectZero;
-        _switchButton.tintColor = [UIColor whiteColor];
-        [_switchButton setImage:[UIImage imageNamed:@"rear_camera_"] forState:UIControlStateNormal];
-        [_switchButton addTarget:self action:@selector(switchButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        
+        __weak typeof(self) weakself = self;
+
+        UIButton *switchBtn = [SKButton buttonWith:^(SKButton *btn) {
+            
+            btn.
+            
+            frame_(CGRectZero).
+            
+            imageName_(@"rear_camera_").
+            
+            target_and_Action_(weakself, @selector(switchButtonPressed:));
+            
+        }];
+        
+        _switchButton = switchBtn ;
 
     }
     return _switchButton;
 }
 
 
-- (UIButton *)slectPhotoButton {
+- (UIButton *)doneButton {
     
-    if (!_slectPhotoButton) {
-        _slectPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _slectPhotoButton.frame = CGRectZero;
-        _slectPhotoButton.tintColor = [UIColor whiteColor];
-        [_slectPhotoButton setImage:[UIImage imageNamed:@"import_"] forState:UIControlStateNormal];
-        [_slectPhotoButton addTarget:self action:@selector(slectPhotoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    if (!_doneButton) {
         
+        __weak typeof(self) weakself = self;
+        
+        UIButton *doneBtn = [SKButton createImgButtonWithFrame:CGRectZero imageName:@"done_" clickAction:^(UIButton *btn) {
+            if (weakself.doneButtonPressed) {
+                weakself.doneButtonPressed(btn);
+            }
+        }];
+        _doneButton = doneBtn;
     }
-    return _slectPhotoButton;
+    return _doneButton;
 }
 
 

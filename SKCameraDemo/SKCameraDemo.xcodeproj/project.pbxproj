@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC03F10F1ED58D3D00F49585 /* VideoPlayViewController.m */; };
-		BC0A4D721F03810300CA67E4 /* SKOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = BC0A4D711F03810300CA67E4 /* SKOpenGLView.m */; };
 		BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1E61ECEC68A00CEF6F8 /* main.m */; };
 		BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1E91ECEC68A00CEF6F8 /* AppDelegate.m */; };
 		BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BC15C1EC1ECEC68A00CEF6F8 /* ViewController.m */; };
@@ -25,6 +24,7 @@
 		BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED353C1ED2EE33000AD97F /* ViewUtils.m */; };
 		BCED35411ED2F77B000AD97F /* TopControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35401ED2F77B000AD97F /* TopControlView.m */; };
 		BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCED35461ED2F7DA000AD97F /* BottomControlView.m */; };
+		BCF9D5871F0CB8F000FFBE58 /* CALayer+ControlAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = BCF9D5861F0CB8F000FFBE58 /* CALayer+ControlAnimation.m */; };
 		DA8318F53FA2BE638A2C4490 /* libPods-SKCameraDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3590D02F506CE9DC1F8BBE3 /* libPods-SKCameraDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -34,8 +34,6 @@
 		B3590D02F506CE9DC1F8BBE3 /* libPods-SKCameraDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SKCameraDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC03F10E1ED58D3D00F49585 /* VideoPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoPlayViewController.h; sourceTree = "<group>"; };
 		BC03F10F1ED58D3D00F49585 /* VideoPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoPlayViewController.m; sourceTree = "<group>"; };
-		BC0A4D701F03810300CA67E4 /* SKOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKOpenGLView.h; sourceTree = "<group>"; };
-		BC0A4D711F03810300CA67E4 /* SKOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKOpenGLView.m; sourceTree = "<group>"; };
 		BC15C1E21ECEC68A00CEF6F8 /* SKCameraDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKCameraDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC15C1E61ECEC68A00CEF6F8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BC15C1E81ECEC68A00CEF6F8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -68,6 +66,8 @@
 		BCED35401ED2F77B000AD97F /* TopControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopControlView.m; sourceTree = "<group>"; };
 		BCED35451ED2F7DA000AD97F /* BottomControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BottomControlView.h; sourceTree = "<group>"; };
 		BCED35461ED2F7DA000AD97F /* BottomControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomControlView.m; sourceTree = "<group>"; };
+		BCF9D5851F0CB8F000FFBE58 /* CALayer+ControlAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+ControlAnimation.h"; sourceTree = "<group>"; };
+		BCF9D5861F0CB8F000FFBE58 /* CALayer+ControlAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+ControlAnimation.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +187,8 @@
 			children = (
 				BCED35091ED2E05D000AD97F /* CircleProgressView.h */,
 				BCED350A1ED2E05D000AD97F /* CircleProgressView.m */,
+				BCF9D5851F0CB8F000FFBE58 /* CALayer+ControlAnimation.h */,
+				BCF9D5861F0CB8F000FFBE58 /* CALayer+ControlAnimation.m */,
 				BCED353F1ED2F77B000AD97F /* TopControlView.h */,
 				BCED35401ED2F77B000AD97F /* TopControlView.m */,
 				BCED35451ED2F7DA000AD97F /* BottomControlView.h */,
@@ -200,8 +202,6 @@
 			children = (
 				BCED350F1ED2E911000AD97F /* SKCamera.h */,
 				BCED35101ED2E911000AD97F /* SKCamera.m */,
-				BC0A4D701F03810300CA67E4 /* SKOpenGLView.h */,
-				BC0A4D711F03810300CA67E4 /* SKOpenGLView.m */,
 				BC15CAED1EFBC67700FFAFEF /* UIImage+Utils.h */,
 				BC15CAEE1EFBC67700FFAFEF /* UIImage+Utils.m */,
 				BC15CAF01EFBC7C500FFAFEF /* SKCamera+Helper.h */,
@@ -348,6 +348,7 @@
 			files = (
 				BC15C1ED1ECEC68A00CEF6F8 /* ViewController.m in Sources */,
 				BC15C1EA1ECEC68A00CEF6F8 /* AppDelegate.m in Sources */,
+				BCF9D5871F0CB8F000FFBE58 /* CALayer+ControlAnimation.m in Sources */,
 				BC29A95E1ED6E1ED00802435 /* UIButton+PreventMultipleClicks.m in Sources */,
 				BC03F1101ED58D3D00F49585 /* VideoPlayViewController.m in Sources */,
 				BCED353D1ED2EE33000AD97F /* ViewUtils.m in Sources */,
@@ -356,7 +357,6 @@
 				BC15C1E71ECEC68A00CEF6F8 /* main.m in Sources */,
 				BC15CAF21EFBC7C500FFAFEF /* SKCamera+Helper.m in Sources */,
 				BCED35051ED2C0B9000AD97F /* RecordViewController.m in Sources */,
-				BC0A4D721F03810300CA67E4 /* SKOpenGLView.m in Sources */,
 				BCED35141ED2E911000AD97F /* SKCamera.m in Sources */,
 				BCED35471ED2F7DA000AD97F /* BottomControlView.m in Sources */,
 				BCED350B1ED2E05D000AD97F /* CircleProgressView.m in Sources */,
