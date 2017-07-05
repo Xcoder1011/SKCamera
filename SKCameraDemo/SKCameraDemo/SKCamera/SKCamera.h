@@ -257,11 +257,6 @@ animationBlock:(void (^)(AVCaptureVideoPreviewLayer *))animationBlock;
 - (BOOL)isTorchAvailable;
 
 /**
- * 自定义 对焦 动画
- */
-- (void)alterFocusBox:(CALayer *)layer animation:(CAAnimation *)animation;
-
-/**
  * 销毁相机画
  */
 - (void)destroyCamera;

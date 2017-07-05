@@ -99,6 +99,7 @@
     
     if (!_switchButton) {
         _switchButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _switchButton.isNeedPrevent = YES;
         _switchButton.frame = CGRectZero;
         _switchButton.tintColor = [UIColor whiteColor];
         [_switchButton setImage:[UIImage imageNamed:@"rear_camera_"] forState:UIControlStateNormal];

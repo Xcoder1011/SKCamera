@@ -234,7 +234,6 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    
     _progressLayer.frame=self.bounds;
     [self setProgressLineWidth:_progressLineWidth];
 }
@@ -243,6 +242,8 @@ static inline CABasicAnimation* ScaleAnimation(CGFloat fromValue, CGFloat toValu
 -(void)dealloc{
     self.animationGroup.delegate = nil;
     self.progressLayer = nil;
+    self.bgLayer = nil;
+    self.middleLayer = nil;
 }
 
 

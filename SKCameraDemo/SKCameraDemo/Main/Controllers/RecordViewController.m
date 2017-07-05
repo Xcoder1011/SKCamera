@@ -140,7 +140,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.topControlView.flashButton.hidden = YES;
+    self.topControlView.timeLabel.hidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

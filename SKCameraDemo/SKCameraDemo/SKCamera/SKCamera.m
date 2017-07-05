@@ -20,17 +20,16 @@ AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBuff
     BOOL _audioOutputAdded;
     BOOL _metadataOutputAdded;
     
-    // 需要录制的区域 frame
-    CGRect _cropFrame;
-    BOOL _isReordCustomRect; // 是否录制自定义区域
+    CGRect _cropFrame;  //需要录制的区域 frame
+    BOOL _isReordCustomRect; //是否录制自定义区域
     
-    CMTime  _startRecordTime; // 开始录制的时间
-    CGFloat _currentRecordTime; // 当前录制时间
-    CGFloat _maxRecordTime; // 录制最长时间
+    CMTime  _startRecordTime; //开始录制的时间
+    CGFloat _currentRecordTime; //当前录制时间
+    CGFloat _maxRecordTime; //录制最长时间
     
-    CMTime _timeOffset;//录制的偏移CMTime
-    CMTime _lastVideoTime;//记录上一次视频数据文件的CMTime
-    CMTime _lastAudioTime;//记录上一次音频数据文件的CMTime
+    CMTime _timeOffset; //录制的偏移CMTime
+    CMTime _lastVideoTime; //记录上一次视频数据文件的CMTime
+    CMTime _lastAudioTime; //记录上一次音频数据文件的CMTime
 }
 
 
@@ -166,8 +165,24 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     _sessionQueue = dispatch_queue_create("com.skcamera.sessionQueue", nil);
     dispatch_queue_set_specific(_sessionQueue, "SKCameraRecordSessionQueue", "true", nil);
     dispatch_set_target_queue(_sessionQueue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+
 }
 
+#pragma mark - notification
+- (void)applicationEnterBackground
+{
+    [self sk_pauseRecording];
+    [self stopRunnig];
+}
+
+- (void)applicationDidBecomeActive
+{
+    [self sk_resumeRecording];
+    [self startRunnig];
+}
 
 - (void) addCustomGesture {
     
@@ -235,7 +250,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     [SKCamera requestCameraPermission:^(BOOL granted) {
         if(granted) {
-            // request microphone permission if video is enabled
+           
             if(self.videoEnabled) {
                 [SKCamera requestMicrophonePermission:^(BOOL granted) {
                     if(granted) {
@@ -317,8 +332,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         _captureVideoPreviewLayer.bounds = bounds;
         _captureVideoPreviewLayer.position = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
         
-        // [self openGLView];
-        
         if (_previewView != nil) {  // new add
             [_previewView.layer insertSublayer:_captureVideoPreviewLayer atIndex:0];
             [self previewViewFrameChanged];
@@ -357,7 +370,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
             NSError *error;
             if ([device lockForConfiguration:&error]) {
-                //曝光模式和曝光点
+                
                 if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
                     [device setExposureMode:AVCaptureExposureModeAutoExpose];
                 }
@@ -402,10 +415,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                     [self.session addOutput:self.videoDataOutput];
                     _videoOutputAdded = YES;
                     _videoConnection = [self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
-                    //                    _videoConnection.automaticallyAdjustsVideoMirroring = YES;
                     _videoConnection.videoOrientation = [self orientationForConnection];
-                    
-                    // 标识视频录入时稳定音频流的接受，我们这里设置为自动
                     if(_videoConnection.isVideoStabilizationSupported){
                         _videoConnection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
                     }
@@ -574,7 +584,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 }
 
 
-
 #pragma mark - delegates
 
 - (void)setCaptureDelegate:
@@ -654,9 +663,9 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     
     unlink([[url path] UTF8String]);
     
-    CGFloat WIDTH = _imageSize.height *  _cropFrame.size.width / [self previewView].size.width; // 720
+    CGFloat WIDTH = _imageSize.height *  _cropFrame.size.width / [self previewView].size.width;
     
-    CGFloat HEIGHT = _imageSize.width *  _cropFrame.size.height / [self previewView].size.height; // 720
+    CGFloat HEIGHT = _imageSize.width *  _cropFrame.size.height / [self previewView].size.height;
     
     [self createWriter:url cropSize:CGSizeMake(floor(WIDTH), floor(HEIGHT))];
     
@@ -812,9 +821,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             dispatch_async(_sessionQueue, ^{
                 
                 if (self.videoWriter) {
-                    
                     [self.videoWriter finishWritingWithCompletionHandler:^{
-                        NSLog(@"写完了");
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self enableTorch:NO];
                             self.recording = NO;
@@ -859,7 +866,6 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-    
     
     /*
      *  OpenGL  渲染 CMSampleBufferRef
@@ -957,13 +963,12 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
         return;
     }
     
+    // preogress delegate
     if (self.onRecordingTimeBlock) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.onRecordingTimeBlock(self, _currentRecordTime, _maxRecordTime);
         });
     }
-
-    // preogress delegate
     
     if (CMSampleBufferDataIsReady(sampleBuffer)) {
         
@@ -1010,14 +1015,10 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
                     
                     CGFloat HEIGHT = originImage.size.height *  _cropFrame.size.height / [self previewView].size.height;
                     
-                    UIImage *cropImage = [originImage croppedImageWithFrame:CGRectMake(distanceX, distanceY, WIDTH , HEIGHT)];// cropImage.size = {720, 720}
+                    UIImage *cropImage = [originImage croppedImageWithFrame:CGRectMake(distanceX, distanceY, WIDTH , HEIGHT)];
                     
                     if (cropImage) {
-                        /*
-                        NSLog(@"originImage.size = %@",NSStringFromCGSize(originImage.size));
-                        NSLog(@"distanceY = %f",distanceY);
-                        NSLog(@"cropImage = %@",NSStringFromCGSize(cropImage.size));
-                        */
+                      
                         pixelBuffer = [SKCamera pixelBufferFromCGImage:cropImage.CGImage];
                         
                         if (self.pixelBufferAdaptor) {
@@ -1314,7 +1315,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
     if (device.isFocusPointOfInterestSupported && [device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         NSError *error;
         if ([device lockForConfiguration:&error]) {
-            // 曝光模式
+            
             if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
                 [device setExposureMode:AVCaptureExposureModeAutoExpose];
             }
@@ -1388,7 +1389,7 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
             device.focusPointOfInterest = point;
             device.focusMode = AVCaptureFocusModeAutoFocus;
             
-            //曝光模式和曝光点
+            // 曝光模式和曝光点
             if ([device isExposureModeSupported:AVCaptureExposureModeAutoExpose ]) {
                 [device setExposurePointOfInterest:point];
                 [device setExposureMode:AVCaptureExposureModeAutoExpose];
@@ -1528,17 +1529,15 @@ NSString *const SKCameraErrorDomain = @"SKCameraErrorDomain";
 
 - (void)dealloc {
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self destroyCamera];
-    
 }
 
 // 销毁相机
 - (void)destroyCamera {
     
     if (_session != nil) {
-        
         [self stopRunnig];
-        
         for (AVCaptureDeviceInput *input in _session.inputs) {
             [_session removeInput:input];
         }
