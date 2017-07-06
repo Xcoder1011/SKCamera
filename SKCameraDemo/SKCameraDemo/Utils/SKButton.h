@@ -19,6 +19,8 @@
 
 @property(nonatomic, copy) SKButton *(^color_)(UIColor *color);
 
+@property(nonatomic, copy) SKButton *(^backgroundColor_)(UIColor *color);
+
 @property(nonatomic, copy) SKButton *(^font_)(UIFont *font);
 
 @property(nonatomic, copy) SKButton *(^imageName_)(NSString *imageName);
@@ -26,6 +28,8 @@
 @property(nonatomic, copy) SKButton *(^hightlighImageName_)(NSString *hightlighImageName);
 
 @property(nonatomic, copy) SKButton *(^selectImageName_)(NSString *selectImageName);
+
+@property(nonatomic, copy) SKButton *(^conerRadius)(CGFloat radius);
 
 @property(nonatomic, copy) SKButton *(^target_and_Action_)(id target , SEL action);
 
@@ -46,6 +50,7 @@
 + (UIButton *)createTitleButtonWithFrame:(CGRect)frame
                                    title:(NSString *)title
                               titleColor:(UIColor *)titleColor
+                         backgroundColor:(UIColor *)backgroundColor
                                titleFont:(UIFont *)titleFont
                              clickAction:(void(^)(UIButton *btn))clickAction;
 
@@ -59,6 +64,7 @@
 // title button & SEL
 + (UIButton *) buttonWithTitle:(NSString *)buttonTitle
                     titleColor:(UIColor *)titleColor
+               backgroundColor:(UIColor *)backgroundColor
                      titleFont:(UIFont *)titleFont
                      addTarget:(id)target
                         action:(SEL)action;
@@ -66,6 +72,7 @@
 // image & title
 + (UIButton *) buttonWithTitle:(NSString *)buttonTitle
                     titleColor:(UIColor *)titleColor
+               backgroundColor:(UIColor *)backgroundColor
                      titleFont:(UIFont *)titleFont
                          image:(NSString *)imageName
                  highlighImage:(NSString *)hightlighImageName

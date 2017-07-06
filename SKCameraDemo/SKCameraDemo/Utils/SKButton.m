@@ -60,13 +60,37 @@
     return setTitle;
 }
 
+- (SKButton *(^)(UIFont *))font_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(UIFont *titleFont) {
+        
+        weakself.titleLabel.font = titleFont;
+        
+        return weakself;
+    };
+}
+
 - (SKButton *(^)(UIColor *))color_ {
     
     __weak typeof(self) weakself = self;
     
     return ^(UIColor *color) {
         
-        [weakself setTitleColor:color forState:0];
+        [weakself setTitleColor:color forState:UIControlStateNormal];
+        
+        return weakself;
+    };
+}
+
+- (SKButton *(^)(UIColor *))backgroundColor_ {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(UIColor *color) {
+        
+        [weakself setBackgroundColor:color];
         
         return weakself;
     };
@@ -105,6 +129,20 @@
         [weakself setImage:[UIImage imageNamed:name] forState:UIControlStateSelected];
         
         return self;
+    };
+}
+
+- (SKButton *(^)(CGFloat))conerRadius {
+    
+    __weak typeof(self) weakself = self;
+    
+    return ^(CGFloat coner) {
+        
+        weakself.clipsToBounds = YES;
+        
+        weakself.layer.cornerRadius = coner;
+        
+        return weakself;
     };
 }
 
@@ -153,6 +191,7 @@
 + (UIButton *)createTitleButtonWithFrame:(CGRect)frame
                                    title:(NSString *)title
                               titleColor:(UIColor *)titleColor
+                         backgroundColor:(UIColor *)backgroundColor
                                titleFont:(UIFont *)titleFont
                              clickAction:(void(^)(UIButton *btn))clickAction {
     
@@ -167,6 +206,9 @@
     if (titleFont) {
         btn.titleLabel.font = titleFont;
     }
+    if (backgroundColor) {
+        btn.backgroundColor = backgroundColor;
+    }
     btn.clickAction = clickAction;
     return btn;
 }
@@ -177,20 +219,24 @@
                      addTarget:(id)target
                         action:(SEL)action {
     
-    return [self buttonWithTitle:nil titleColor:nil titleFont:nil image:imageName highlighImage:hightlighImageName selectImage:selectImageName addTarget:target action:action];
+    return [self buttonWithTitle:nil titleColor:nil backgroundColor:nil titleFont:nil image:imageName highlighImage:hightlighImageName selectImage:selectImageName addTarget:target action:action];
 }
+
 
 + (UIButton *) buttonWithTitle:(NSString *)buttonTitle
                     titleColor:(UIColor *)titleColor
+               backgroundColor:(UIColor *)backgroundColor
                      titleFont:(UIFont *)titleFont
                      addTarget:(id)target
                         action:(SEL)action {
     
-    return [self buttonWithTitle:buttonTitle titleColor:titleColor titleFont:titleFont image:nil highlighImage:nil selectImage:nil addTarget:target action:action];
+    return [self buttonWithTitle:buttonTitle titleColor:titleColor backgroundColor:backgroundColor titleFont:titleFont image:nil highlighImage:nil selectImage:nil addTarget:target action:action];
 }
 
+// image & title
 + (UIButton *) buttonWithTitle:(NSString *)buttonTitle
                     titleColor:(UIColor *)titleColor
+               backgroundColor:(UIColor *)backgroundColor
                      titleFont:(UIFont *)titleFont
                          image:(NSString *)imageName
                  highlighImage:(NSString *)hightlighImageName
@@ -207,6 +253,9 @@
     }
     if (titleFont) {
         btn.titleLabel.font = titleFont;
+    }
+    if (backgroundColor) {
+        btn.backgroundColor = backgroundColor;
     }
     if (imageName) {
         [btn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
